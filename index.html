@@ -1952,7 +1952,7 @@ function checkPassword(){
 ===================================================== */
 
 let stopMessages = null;
-
+let scrollToBottom = true;
 
 function openChat(){
 
@@ -2158,21 +2158,36 @@ async function editMessage(messageId, newText) {
 
 
 /* =====================================================
-   CLEAR CHAT (محلياً)
+   CLEAR CHAT (محلياً) - مسح كل الرسائل وعرض الجديدة بس
 ===================================================== */
 
 function clearChatLocally() {
     if (confirm("هل أنت متأكد من مسح كل الرسائل من شاشتك؟ (لن تؤثر على الآخرين)")) {
-        localStorage.setItem('chatCleared_' + (currentUser?.uid || 'guest'), 'true');
+        // نحفظ في localStorage أن المستخدم مسح الشات مع وقت المسح
+        const clearTime = Date.now();
+        localStorage.setItem('chatCleared_' + (currentUser?.uid || 'guest'), clearTime.toString());
         isChatCleared = true;
+        
+        // نعرض رسالة "تم مسح الشات" مع تاريخ المسح
         const box = document.getElementById("messages");
+        const clearDate = new Date(clearTime).toLocaleString('ar-EG');
         box.innerHTML = `
-            <div class="reminder" style="background:#064b3b;padding:12px;border-radius:12px;border:1px solid #176653;">
-                🗑️ تم مسح المحادثة من شاشتك
+            <div class="clear-message">
+                🗑️ تم مسح المحادثة في ${clearDate}
                 <br>
-                <span style="font-size:12px;color:#a9c9bd;">الرسائل الجديدة ستظهر هنا تلقائياً</span>
+                <span style="font-size:12px;color:#8ca9a0;">الرسائل الجديدة فقط ستظهر هنا</span>
+            </div>
+            <div class="reminder" style="background:#064b3b;padding:12px;border-radius:12px;margin:10px 0;border:1px solid #176653;">
+                🤍 لا تنسَ قراءة القرآن
+                <br>
+                <span style="font-size:12px;color:#a9c9bd;">✅ متصل بـ Firebase</span>
             </div>
         `;
+        
+        // ننزل للأسفل
+        setTimeout(() => {
+            box.scrollTop = box.scrollHeight;
+        }, 100);
     }
 }
 
@@ -2272,19 +2287,21 @@ function listenMessages(){
 
                 // نتحقق من حالة المسح المحلي
                 const chatKey = 'chatCleared_' + (currentUser?.uid || 'guest');
-                const isCleared = localStorage.getItem(chatKey) === 'true';
+                const clearTime = localStorage.getItem(chatKey);
+                const isCleared = clearTime !== null;
                 isChatCleared = isCleared;
 
                 // نبدأ ببناء المحتوى
                 let content = '';
 
-                // إذا كان الشات ممسوح محلياً، نضيف رسالة
+                // إذا كان الشات ممسوح محلياً، نضيف رسالة المسح
                 if (isCleared) {
+                    const clearDate = new Date(parseInt(clearTime)).toLocaleString('ar-EG');
                     content += `
                         <div class="clear-message">
-                            🗑️ تم مسح المحادثة من شاشتك
+                            🗑️ تم مسح المحادثة في ${clearDate}
                             <br>
-                            <span style="font-size:12px;color:#8ca9a0;">الرسائل الجديدة ستظهر هنا</span>
+                            <span style="font-size:12px;color:#8ca9a0;">الرسائل الجديدة فقط ستظهر هنا</span>
                         </div>
                     `;
                 }
@@ -2314,12 +2331,15 @@ function listenMessages(){
                     </div>
                 `;
 
-                // نضيف الرسائل
+                // نضيف الرسائل - لو ممسوح، نعرض بس الرسائل الجديدة (اللي وقتها أكبر من وقت المسح)
                 let messagesHTML = '';
                 let messageCount = 0;
                 snapshot.forEach(child => {
                     const data = child.val();
-                    if (isCleared && messageCount >= 10) return;
+                    // لو ممسوح، نعرض بس الرسائل اللي بعد وقت المسح
+                    if (isCleared && data.createdAt && data.createdAt < parseInt(clearTime)) {
+                        return; // نتخطى الرسائل القديمة
+                    }
                     messagesHTML += renderMessageHTML(data, child.key);
                     messageCount++;
                 });
@@ -2327,15 +2347,10 @@ function listenMessages(){
                 content += messagesHTML;
                 box.innerHTML = content;
                 
-                // ننزل لآخر رسالة بعد إنشاء العناصر
+                // ننزل لآخر رسالة (أحدث رسالة)
                 setTimeout(() => {
                     box.scrollTop = box.scrollHeight;
                 }, 150);
-
-                // ربط أحداث الأزرار (لأنها جديدة)
-                setTimeout(() => {
-                    attachButtonEvents();
-                }, 100);
 
             },
 
@@ -2445,109 +2460,102 @@ function renderMessageHTML(data, messageId) {
 
 
 /* =====================================================
-   ربط أحداث الأزرار
+   ربط أحداث الأزرار (Event Delegation)
 ===================================================== */
 
-function attachButtonEvents() {
+// نربط الأحداث على الـ container كله
+document.addEventListener('click', function(e) {
     // زر رد
-    document.querySelectorAll('.reply-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const id = this.dataset.id;
-            const name = this.dataset.name;
-            const text = decodeURIComponent(this.dataset.text);
-            replyingTo = { id, name, text };
-            document.getElementById("messageInput").placeholder = `↩️ رد على ${name}...`;
-            document.getElementById("messageInput").focus();
-            // نخفي الأزرار
-            const actions = this.closest('.message-actions');
-            if (actions) {
-                actions.classList.remove('show');
-                const wrapper = actions.closest('.message-wrapper');
-                if (wrapper) {
-                    wrapper.querySelector('.message').style.transform = 'translateX(0)';
-                }
+    if (e.target.classList.contains('reply-btn')) {
+        const id = e.target.dataset.id;
+        const name = e.target.dataset.name;
+        const text = decodeURIComponent(e.target.dataset.text);
+        replyingTo = { id, name, text };
+        document.getElementById("messageInput").placeholder = `↩️ رد على ${name}...`;
+        document.getElementById("messageInput").focus();
+        // نخفي الأزرار
+        const actions = e.target.closest('.message-actions');
+        if (actions) {
+            actions.classList.remove('show');
+            const wrapper = actions.closest('.message-wrapper');
+            if (wrapper) {
+                wrapper.querySelector('.message').style.transform = 'translateX(0)';
             }
-        });
-    });
+        }
+        return;
+    }
     
     // زر نسخ
-    document.querySelectorAll('.copy-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const text = decodeURIComponent(this.dataset.text);
-            navigator.clipboard.writeText(text).then(() => {
-                alert("✅ تم نسخ النص");
-            }).catch(() => {
-                const textarea = document.createElement('textarea');
-                textarea.value = text;
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
-                alert("✅ تم نسخ النص");
-            });
-            const actions = this.closest('.message-actions');
-            if (actions) {
-                actions.classList.remove('show');
-                const wrapper = actions.closest('.message-wrapper');
-                if (wrapper) {
-                    wrapper.querySelector('.message').style.transform = 'translateX(0)';
-                }
-            }
+    if (e.target.classList.contains('copy-btn')) {
+        const text = decodeURIComponent(e.target.dataset.text);
+        navigator.clipboard.writeText(text).then(() => {
+            alert("✅ تم نسخ النص");
+        }).catch(() => {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            alert("✅ تم نسخ النص");
         });
-    });
+        const actions = e.target.closest('.message-actions');
+        if (actions) {
+            actions.classList.remove('show');
+            const wrapper = actions.closest('.message-wrapper');
+            if (wrapper) {
+                wrapper.querySelector('.message').style.transform = 'translateX(0)';
+            }
+        }
+        return;
+    }
     
     // زر تعديل
-    document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const id = this.dataset.id;
-            const text = decodeURIComponent(this.dataset.text);
-            openEditModal(id, text);
-            const actions = this.closest('.message-actions');
-            if (actions) {
-                actions.classList.remove('show');
-                const wrapper = actions.closest('.message-wrapper');
-                if (wrapper) {
-                    wrapper.querySelector('.message').style.transform = 'translateX(0)';
-                }
+    if (e.target.classList.contains('edit-btn')) {
+        const id = e.target.dataset.id;
+        const text = decodeURIComponent(e.target.dataset.text);
+        openEditModal(id, text);
+        const actions = e.target.closest('.message-actions');
+        if (actions) {
+            actions.classList.remove('show');
+            const wrapper = actions.closest('.message-wrapper');
+            if (wrapper) {
+                wrapper.querySelector('.message').style.transform = 'translateX(0)';
             }
-        });
-    });
+        }
+        return;
+    }
     
     // زر حذف
-    document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const id = this.dataset.id;
-            if (confirm("هل أنت متأكد من حذف هذه الرسالة؟")) {
-                deleteMessage(id).then(() => {
-                    alert("✅ تم حذف الرسالة");
-                }).catch(error => {
-                    alert("❌ فشل حذف الرسالة: " + error.message);
-                });
+    if (e.target.classList.contains('delete-btn')) {
+        const id = e.target.dataset.id;
+        if (confirm("هل أنت متأكد من حذف هذه الرسالة؟")) {
+            deleteMessage(id).then(() => {
+                alert("✅ تم حذف الرسالة");
+            }).catch(error => {
+                alert("❌ فشل حذف الرسالة: " + error.message);
+            });
+        }
+        const actions = e.target.closest('.message-actions');
+        if (actions) {
+            actions.classList.remove('show');
+            const wrapper = actions.closest('.message-wrapper');
+            if (wrapper) {
+                wrapper.querySelector('.message').style.transform = 'translateX(0)';
             }
-            const actions = this.closest('.message-actions');
-            if (actions) {
-                actions.classList.remove('show');
-                const wrapper = actions.closest('.message-wrapper');
-                if (wrapper) {
-                    wrapper.querySelector('.message').style.transform = 'translateX(0)';
-                }
-            }
-        });
-    });
-}
+        }
+        return;
+    }
+});
 
 
 /* =====================================================
-   السحب للجنب (Swipe)
+   السحب للجنب (Swipe) - Event Delegation
 ===================================================== */
 
-// نربط الأحداث على الـ messages container
 const messagesContainer = document.getElementById('messages');
 
+// للموبايل
 messagesContainer.addEventListener('touchstart', function(e) {
     const wrapper = e.target.closest('.message-wrapper');
     if (!wrapper) return;
@@ -2659,7 +2667,7 @@ document.addEventListener('click', function(e) {
         replyingTo = null;
         document.getElementById("messageInput").placeholder = "اكتب رسالتك...";
     }
-    // إغلاق الأزرار المفتوحة
+    // إغلاق الأزرار المفتوحة (لو ضغط بره)
     document.querySelectorAll('.message-actions.show').forEach(el => {
         if (!el.contains(e.target)) {
             el.classList.remove('show');
@@ -2876,4 +2884,6 @@ async function sendMessage(){
 
 </body>
 </html>
+
+
 
