@@ -1,21 +1,12 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-
 <head>
-
 <meta charset="UTF-8">
-
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>القرآن والأذكار</title>
 
 <style>
-
-/* =====================================================
-   GENERAL
-===================================================== */
-
 *{
     box-sizing:border-box;
     margin:0;
@@ -44,9 +35,7 @@ button{
     display:none!important;
 }
 
-/* =====================================================
-   HEADER
-===================================================== */
+/* ================= HEADER ================= */
 
 header{
     background:#064b3b;
@@ -66,9 +55,7 @@ header p{
     font-size:14px;
 }
 
-/* =====================================================
-   CONTAINER
-===================================================== */
+/* ================= CONTAINER ================= */
 
 .container{
     width:92%;
@@ -76,9 +63,7 @@ header p{
     margin:25px auto;
 }
 
-/* =====================================================
-   HOME
-===================================================== */
+/* ================= HOME ================= */
 
 .home-buttons{
     display:flex;
@@ -112,9 +97,7 @@ header p{
     white-space:pre-line;
 }
 
-/* =====================================================
-   PAGE HEADER
-===================================================== */
+/* ================= PAGE TITLE ================= */
 
 .page-head{
     display:flex;
@@ -134,9 +117,7 @@ header p{
     border-radius:12px;
 }
 
-/* =====================================================
-   SURAHS
-===================================================== */
+/* ================= SURAHS ================= */
 
 .surah-list{
     display:flex;
@@ -154,7 +135,6 @@ header p{
     gap:15px;
     cursor:pointer;
     user-select:none;
-    transition:.15s;
 }
 
 .surah:active{
@@ -185,9 +165,7 @@ header p{
     font-size:13px;
 }
 
-/* =====================================================
-   READER
-===================================================== */
+/* ================= READER ================= */
 
 .reader{
     background:#06261f;
@@ -220,9 +198,7 @@ header p{
     text-align:right;
 }
 
-/* =====================================================
-   SECRET AREA
-===================================================== */
+/* ================= FATIHA SECRET AREA ================= */
 
 .fatiha-secret-area{
     margin-top:28px;
@@ -251,9 +227,7 @@ header p{
     margin-bottom:14px;
 }
 
-/* =====================================================
-   MODAL
-===================================================== */
+/* ================= MODAL ================= */
 
 .modal{
     position:fixed;
@@ -336,9 +310,7 @@ header p{
     min-height:18px;
 }
 
-/* =====================================================
-   CHAT
-===================================================== */
+/* ================= CHAT ================= */
 
 .chat-page{
     min-height:100vh;
@@ -351,7 +323,7 @@ header p{
     padding:16px;
     display:flex;
     align-items:center;
-    gap:10px;
+    gap:12px;
     position:sticky;
     top:0;
     z-index:20;
@@ -364,7 +336,7 @@ header p{
     text-align:center;
 }
 
-.clear-chat-btn{
+.chat-header .clear-chat-btn{
     background:#5a1a1a;
     border:0;
     border-radius:12px;
@@ -374,18 +346,10 @@ header p{
     cursor:pointer;
 }
 
-.clear-chat-btn:active{
-    transform:scale(.96);
-}
-
-/* =====================================================
-   MESSAGES
-===================================================== */
-
 .messages{
     flex:1;
     overflow-y:auto;
-    padding:20px 15px 125px;
+    padding:20px 15px 100px;
 }
 
 .reminder{
@@ -394,15 +358,26 @@ header p{
     margin:15px 0 28px;
 }
 
+/* =====================================================
+   MESSAGE
+===================================================== */
+
 .message-wrapper{
-    margin-bottom:18px;
     position:relative;
-    overflow:visible;
     width:100%;
+    margin-bottom:16px;
+    min-height:20px;
 }
+
+/*
+   مهم جداً:
+   الأزرار أصبحت خارج الرسالة بصرياً
+   ولن تؤثر على حجم الرسالة.
+*/
 
 .message{
     max-width:82%;
+    width:max-content;
     padding:12px 15px;
     border-radius:16px;
     line-height:1.7;
@@ -410,20 +385,26 @@ header p{
     overflow-wrap:anywhere;
     position:relative;
     cursor:pointer;
-    touch-action:manipulation;
-    transition:transform .25s ease;
-    z-index:2;
+    user-select:none;
+    -webkit-user-select:none;
+    transition:.2s;
 }
 
 .message.me{
-    margin-right:auto;
+    margin-right:0;
+    margin-left:auto;
     background:#315d4f;
 }
 
 .message.other{
-    margin-left:auto;
+    margin-left:0;
+    margin-right:auto;
     background:#102e27;
     border:1px solid #1c4c40;
+}
+
+.message:hover{
+    filter:brightness(1.08);
 }
 
 .message-name{
@@ -441,11 +422,10 @@ header p{
 
 .message img{
     max-width:200px;
-    max-height:250px;
+    max-height:200px;
     border-radius:10px;
     display:block;
     margin-top:5px;
-    object-fit:cover;
 }
 
 /* =====================================================
@@ -458,47 +438,75 @@ header p{
     transform:translateY(-50%);
 
     display:flex;
-    gap:7px;
+    align-items:center;
+    gap:6px;
 
     opacity:0;
+    visibility:hidden;
     pointer-events:none;
 
     transition:
-        opacity .2s ease,
-        transform .2s ease;
-
-    z-index:5;
+        opacity .18s ease,
+        visibility .18s ease;
+    
+    z-index:50;
+    
+    /* لا تأخذ مساحة */
+    width:max-content;
+    height:46px;
 }
 
-.message-actions.left{
-    left:5px;
+.message-wrapper.mine .message-actions{
+    right:calc(82% + 8px);
 }
 
-.message-actions.right{
-    right:5px;
+.message-wrapper.other-message .message-actions{
+    left:calc(82% + 8px);
 }
 
-.message-actions.show{
+/*
+   بدلاً من الحساب السابق الذي كان ممكن يعمل
+   خروج الأزرار خارج الشاشة، نضعها حسب مكان
+   الرسالة نفسها.
+*/
+
+.message-wrapper.actions-left .message-actions{
+    right:auto;
+    left:0;
+    transform:translate(-100%,-50%);
+    margin-left:-8px;
+}
+
+.message-wrapper.actions-right .message-actions{
+    left:auto;
+    right:0;
+    transform:translate(100%,-50%);
+    margin-right:-8px;
+}
+
+.message-wrapper.show-actions .message-actions{
     opacity:1;
+    visibility:visible;
     pointer-events:auto;
 }
 
 .message-actions button{
     border:none;
     border-radius:50%;
-
-    width:42px;
-    height:42px;
-
-    font-size:17px;
+    width:40px;
+    height:40px;
+    min-width:40px;
+    font-size:16px;
 
     display:flex;
     align-items:center;
     justify-content:center;
 
-    box-shadow:0 3px 12px rgba(0,0,0,.4);
+    box-shadow:0 3px 12px rgba(0,0,0,.35);
 
-    transition:.15s;
+    transition:
+        transform .15s,
+        filter .15s;
 }
 
 .message-actions button:active{
@@ -525,37 +533,29 @@ header p{
     color:#ff6b6b;
 }
 
-/* =====================================================
-   REPLY
-===================================================== */
+/* ================= REPLY ================= */
 
 .reply-to{
     font-size:12px;
     color:#8ca9a0;
     background:rgba(255,255,255,.05);
-    padding:6px 10px;
+    padding:5px 10px;
     border-radius:8px;
     margin-bottom:7px;
     border-right:3px solid #c6aa57;
+    overflow:hidden;
 }
 
-.reply-name{
+.reply-to .reply-name{
     color:#d5b961;
     font-weight:bold;
-    display:block;
 }
 
-.reply-text{
+.reply-to .reply-text{
     color:#a9c9bd;
-    display:block;
-    margin-top:2px;
-    overflow:hidden;
-    text-overflow:ellipsis;
 }
 
-/* =====================================================
-   EDITED
-===================================================== */
+/* ================= EDITED ================= */
 
 .edited-badge{
     font-size:10px;
@@ -564,64 +564,7 @@ header p{
     display:block;
 }
 
-/* =====================================================
-   REPLY BAR
-===================================================== */
-
-.reply-bar{
-    display:none;
-    position:fixed;
-    bottom:73px;
-    left:0;
-    right:0;
-
-    background:#092f27;
-    border-top:1px solid #315f52;
-
-    padding:9px 12px;
-
-    z-index:29;
-}
-
-.reply-bar.show{
-    display:flex;
-    align-items:center;
-    gap:10px;
-}
-
-.reply-bar-content{
-    flex:1;
-    min-width:0;
-}
-
-.reply-bar-title{
-    color:#d5b961;
-    font-size:12px;
-    font-weight:bold;
-}
-
-.reply-bar-text{
-    color:#a9c9bd;
-    font-size:12px;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    margin-top:2px;
-}
-
-.cancel-reply{
-    background:#5a1a1a;
-    color:#ff8585;
-    border:0;
-    border-radius:50%;
-    width:32px;
-    height:32px;
-    font-size:16px;
-}
-
-/* =====================================================
-   INPUT
-===================================================== */
+/* ================= INPUT ================= */
 
 .chat-input-area{
     position:fixed;
@@ -637,7 +580,8 @@ header p{
     display:flex;
     gap:8px;
 
-    z-index:30;
+    z-index:100;
+
     align-items:center;
 }
 
@@ -647,57 +591,39 @@ header p{
 
     background:#0b2b24;
     border:1px solid #28574b;
-
     color:#fff;
-
     border-radius:15px;
+
     padding:13px;
-
     outline:none;
-}
 
-.chat-input::placeholder{
-    color:#75958c;
+    font-size:15px;
 }
 
 .send-btn{
     border:0;
     border-radius:15px;
-
     background:#c6aa57;
     color:#071d18;
-
     font-weight:bold;
-
     padding:13px 18px;
-}
-
-.send-btn:disabled{
-    opacity:.5;
-    cursor:not-allowed;
 }
 
 .image-btn{
     background:#174c40;
     border-radius:15px;
-
     padding:10px 14px;
-
     cursor:pointer;
-
     border:1px solid #28574b;
-
     color:#fff;
-
     font-size:20px;
 
     display:flex;
     align-items:center;
+    justify-content:center;
 }
 
-/* =====================================================
-   LOADING
-===================================================== */
+/* ================= LOADING ================= */
 
 .loading{
     text-align:center;
@@ -705,44 +631,31 @@ header p{
     color:#b6cbc3;
 }
 
-/* =====================================================
-   CLEAR MESSAGE
-===================================================== */
+/* ================= CLEAR ================= */
 
 .clear-message{
     text-align:center;
     color:#8ca9a0;
-
     font-size:14px;
-
     padding:20px;
-
     background:#0b2b24;
-
     border-radius:12px;
-
     margin:10px 0;
-
     border:1px dashed #28574b;
 }
 
-/* =====================================================
-   EDIT MODAL
-===================================================== */
+/* ================= EDIT MODAL ================= */
 
 .edit-modal{
     position:fixed;
     inset:0;
-
     background:rgba(0,0,0,.9);
 
     display:none;
-
     align-items:center;
     justify-content:center;
 
     padding:20px;
-
     z-index:99999;
 }
 
@@ -755,11 +668,8 @@ header p{
     max-width:400px;
 
     background:#092c25;
-
     border:1px solid #376b5d;
-
     border-radius:22px;
-
     padding:25px;
 }
 
@@ -771,23 +681,18 @@ header p{
 
 .edit-modal-box textarea{
     width:100%;
-
     padding:12px;
 
     border-radius:12px;
-
     border:1px solid #416f63;
 
     background:#031c17;
-
     color:#fff;
 
     font-size:16px;
-
     min-height:100px;
 
     resize:vertical;
-
     outline:none;
 }
 
@@ -799,13 +704,9 @@ header p{
 
 .edit-modal-buttons button{
     flex:1;
-
     padding:12px;
-
     border:0;
-
     border-radius:12px;
-
     font-weight:bold;
 }
 
@@ -819,53 +720,40 @@ header p{
     color:#fff;
 }
 
-/* =====================================================
-   IMAGE PREVIEW
-===================================================== */
+/* ================= TOAST ================= */
 
-.image-preview{
-    display:none;
-
+.toast{
     position:fixed;
+    left:50%;
+    bottom:90px;
 
-    inset:0;
+    transform:translateX(-50%) translateY(20px);
 
-    background:rgba(0,0,0,.92);
+    background:#092c25;
+    border:1px solid #376b5d;
 
-    z-index:999999;
-
-    align-items:center;
-    justify-content:center;
-
-    padding:20px;
-}
-
-.image-preview.show{
-    display:flex;
-}
-
-.image-preview img{
-    max-width:95%;
-    max-height:90%;
-    border-radius:15px;
-}
-
-.close-preview{
-    position:absolute;
-
-    top:20px;
-    right:20px;
-
-    width:40px;
-    height:40px;
-
-    border:0;
-    border-radius:50%;
-
-    background:#5a1a1a;
     color:#fff;
 
-    font-size:20px;
+    padding:12px 18px;
+    border-radius:12px;
+
+    opacity:0;
+    visibility:hidden;
+
+    transition:.25s;
+
+    z-index:100000;
+
+    white-space:nowrap;
+    max-width:90%;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.toast.show{
+    opacity:1;
+    visibility:visible;
+    transform:translateX(-50%) translateY(0);
 }
 
 /* =====================================================
@@ -874,41 +762,58 @@ header p{
 
 @media(max-width:600px){
 
-    header h1{
-        font-size:23px;
-    }
-
     .message{
-        max-width:78%;
-    }
-
-    .message-actions button{
-        width:38px;
-        height:38px;
-        font-size:15px;
+        max-width:76%;
     }
 
     .message-actions{
-        gap:5px;
+        gap:4px;
+    }
+
+    .message-actions button{
+        width:36px;
+        height:36px;
+        min-width:36px;
+        font-size:14px;
+    }
+
+    /*
+       في الموبايل نخلي الأزرار تحت الرسالة
+       قليلاً حتى لا تختفي خارج الشاشة.
+    */
+
+    .message-wrapper.show-actions{
+        padding-bottom:48px;
+    }
+
+    .message-wrapper .message-actions{
+        left:50%!important;
+        right:auto!important;
+
+        top:auto!important;
+        bottom:2px!important;
+
+        transform:translateX(-50%)!important;
+
+        margin:0!important;
+    }
+
+    .chat-input-area{
+        padding:8px;
     }
 
     .send-btn{
-        padding:13px 14px;
+        padding:12px 14px;
     }
 
     .image-btn{
-        padding:10px 11px;
+        padding:9px 11px;
     }
-
 }
-
 </style>
-
 </head>
 
-
 <body>
-
 
 <!-- =====================================================
      HOME
@@ -917,45 +822,22 @@ header p{
 <div id="homePage">
 
 <header>
-
     <h1>📖 القرآن والأذكار 🤲</h1>
-
-    <p>
-        اقرأ واذكر الله في كل وقت
-    </p>
-
+    <p>اقرأ واذكر الله في كل وقت</p>
 </header>
-
 
 <div class="container">
 
     <div class="home-buttons">
 
-        <div class="main-card"
-             id="quranButton">
-
-            <h2>
-                📖 القرآن الكريم
-            </h2>
-
-            <p>
-                تصفح سور القرآن الكريم واقرأ كتاب الله.
-            </p>
-
+        <div class="main-card" id="quranButton">
+            <h2>📖 القرآن الكريم</h2>
+            <p>تصفح سور القرآن الكريم واقرأ كتاب الله.</p>
         </div>
 
-
-        <div class="main-card"
-             id="azkarButton">
-
-            <h2>
-                🤲 الأذكار
-            </h2>
-
-            <p>
-                أذكار الصباح والمساء والأذكار اليومية.
-            </p>
-
+        <div class="main-card" id="azkarButton">
+            <h2>🤲 الأذكار</h2>
+            <p>أذكار الصباح والمساء والأذكار اليومية.</p>
         </div>
 
     </div>
@@ -966,36 +848,28 @@ header p{
 
 
 <!-- =====================================================
-     QURAN PAGE
+     QURAN
 ===================================================== -->
 
-<div id="quranPage"
-     class="hidden">
+<div id="quranPage" class="hidden">
 
 <header>
 
     <div class="container page-head">
 
-        <button class="back-btn"
-                id="quranBack">
-
+        <button class="back-btn" id="quranBack">
             رجوع
-
         </button>
 
-        <h1>
-            📖 سور القرآن الكريم
-        </h1>
+        <h1>📖 سور القرآن الكريم</h1>
 
     </div>
 
 </header>
 
-
 <div class="container">
 
-    <div id="surahList"
-         class="surah-list">
+    <div id="surahList" class="surah-list">
 
         <div class="loading">
             جاري تحميل السور...
@@ -1012,18 +886,14 @@ header p{
      READER
 ===================================================== -->
 
-<div id="readerPage"
-     class="hidden">
+<div id="readerPage" class="hidden">
 
 <header>
 
     <div class="container page-head">
 
-        <button class="back-btn"
-                id="readerBack">
-
+        <button class="back-btn" id="readerBack">
             رجوع
-
         </button>
 
         <h1 id="readerTitle">
@@ -1033,7 +903,6 @@ header p{
     </div>
 
 </header>
-
 
 <div class="container">
 
@@ -1052,43 +921,33 @@ header p{
      AZKAR
 ===================================================== -->
 
-<div id="azkarPage"
-     class="hidden">
+<div id="azkarPage" class="hidden">
 
 <header>
 
     <div class="container page-head">
 
-        <button class="back-btn"
-                id="azkarBack">
-
+        <button class="back-btn" id="azkarBack">
             رجوع
-
         </button>
 
-        <h1>
-            🤲 الأذكار
-        </h1>
+        <h1>🤲 الأذكار</h1>
 
     </div>
 
 </header>
 
-
 <div class="container">
-
 
 <div class="main-card">
 
-<h2>
-🌅 أذكار الصباح
-</h2>
+<h2>🌅 أذكار الصباح</h2>
 
 <p>
 
 🤲 النية
 
-"اللهم إني نويت سنة الذكر في هذا الصباح، تقربًا إليك، واتباعًا لسنة نبيك محمد ﷺ"
+"اللهم إني نويتُ سنةَ الذكرِ في هذا الصباح، تقربًا إليك، واتباعًا لسنة نبيك محمد ﷺ"
 
 
 📖 الأذكار
@@ -1099,6 +958,7 @@ header p{
 
 (مرة واحدة)
 
+---
 
 2. سورة الإخلاص + المعوذتين
 
@@ -1110,23 +970,27 @@ header p{
 
 (ثلاث مرات)
 
+---
 
 3. أذكار الصباح الأساسية
 
-"أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ. رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَٰذَا الْيَوْمِ وَخَيْرَ مَا بَعْدَهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَٰذَا الْيَوْمِ وَشَرِّ مَا بَعْدَهُ."
+"أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ. رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَٰذَا الْيَوْمِ وَخَيْرَ مَا بَعْدَهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَٰذَا الْيَوْمِ وَشَرِّ مَا بَعْدَهُ. رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ"
 
 (مرة واحدة)
 
+---
 
 "اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ النُّشُورُ"
 
 (مرة واحدة)
 
+---
 
 "اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَٰهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَىٰ عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ لَكَ بِذَنْبِي، فَاغْفِرْ لِي، فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ"
 
 (مرة واحدة)
 
+---
 
 4. أذكار الحماية والوقاية
 
@@ -1134,11 +998,19 @@ header p{
 
 (ثلاث مرات)
 
+---
 
 "رَضِيتُ بِاللَّهِ رَبًّا، وَبِالْإِسْلَامِ دِينًا، وَبِمُحَمَّدٍ ﷺ نَبِيًّا"
 
 (ثلاث مرات)
 
+---
+
+"يَا حَيُّ يَا قَيُّومُ، بِرَحْمَتِكَ أَسْتَغِيثُ، أَصْلِحْ لِي شَأْنِي كُلَّهُ، وَلَا تَكِلْنِي إِلَىٰ نَفْسِي طَرْفَةَ عَيْنٍ"
+
+(مرة واحدة)
+
+---
 
 5. أذكار الاستغفار والتسبيح
 
@@ -1146,23 +1018,37 @@ header p{
 
 (مئة مرة)
 
+---
 
 "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ"
 
 (مئة مرة)
 
+---
 
 6. خاتمة الأذكار
 
-"لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ"
+"لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ"
 
-(عشر مرات أو مرة واحدة)
+(عشر مرات - أو مرة واحدة)
 
+---
 
 "اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَىٰ نَبِيِّنَا مُحَمَّدٍ"
 
 (عشر مرات)
 
+---
+
+💎 فضل أذكار الصباح
+
+· حفظ من شر الجن والإنس
+· سبب لدفع البلاء
+· سبب للرزق والبركة
+· نور للوجه والقلب
+· سبب لدخول الجنة
+
+---
 
 🌸 اللهم تقبل منا، وأحسن خاتمتنا، واجعلنا من الذاكرين الذاكرات 🌸
 
@@ -1170,21 +1056,17 @@ header p{
 
 </div>
 
-
 <br>
-
 
 <div class="main-card">
 
-<h2>
-🌙 أذكار المساء
-</h2>
+<h2>🌙 أذكار المساء</h2>
 
 <p>
 
 🤲 النية
 
-"اللهم إني نويت سنة الذكر في هذا المساء، تقربًا إليك، واتباعًا لسنة نبيك محمد ﷺ"
+"اللهم إني نويتُ سنةَ الذكرِ في هذا المساء، تقربًا إليك، واتباعًا لسنة نبيك محمد ﷺ"
 
 
 📖 الأذكار
@@ -1195,6 +1077,7 @@ header p{
 
 (مرة واحدة)
 
+---
 
 2. سورة الإخلاص + المعوذتين
 
@@ -1206,35 +1089,109 @@ header p{
 
 (ثلاث مرات)
 
+---
 
 3. أذكار المساء الأساسية
 
-"أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ"
+"أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ. رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَٰذِهِ اللَّيْلَةِ وَخَيْرَ مَا بَعْدَهَا، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَٰذِهِ اللَّيْلَةِ وَشَرِّ مَا بَعْدَهَا. رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ"
 
 (مرة واحدة)
 
+---
 
 "اللَّهُمَّ بِكَ أَمْسَيْنَا، وَبِكَ أَصْبَحْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ الْمَصِيرُ"
 
 (مرة واحدة)
 
+---
+
+"اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَٰهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَىٰ عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ لَكَ بِذَنْبِي، فَاغْفِرْ لِي، فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ"
+
+(مرة واحدة)
+
+---
+
+4. أذكار الحماية والوقاية
+
+"بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ"
+
+(ثلاث مرات)
+
+---
+
+"رَضِيتُ بِاللَّهِ رَبًّا، وَبِالْإِسْلَامِ دِينًا، وَبِمُحَمَّدٍ ﷺ نَبِيًّا"
+
+(ثلاث مرات)
+
+---
+
+"يَا حَيُّ يَا قَيُّومُ، بِرَحْمَتِكَ أَسْتَغِيثُ، أَصْلِحْ لِي شَأْنِي كُلَّهُ، وَلَا تَكِلْنِي إِلَىٰ نَفْسِي طَرْفَةَ عَيْنٍ"
+
+(مرة واحدة)
+
+---
+
+5. أذكار النوم والحفظ
+
+"اللَّهُمَّ قِنِي عَذَابَكَ يَوْمَ تَبْعَثُ عِبَادَكَ"
+
+(ثلاث مرات)
+
+---
+
+"اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي دِينِي وَدُنْيَايَ وَأَهْلِي وَمَالِي، اللَّهُمَّ اسْتُرْ عَوْرَاتِي وَآمِنْ رَوْعَاتِي، اللَّهُمَّ احْفَظْنِي مِنْ بَيْنِ يَدَيَّ وَمِنْ خَلْفِي وَعَنْ يَمِينِي وَعَنْ شِمَالِي وَمِنْ فَوْقِي، وَأَعُوذُ بِعَظَمَتِكَ أَنْ أُغْتَالَ مِنْ تَحْتِي"
+
+(مرة واحدة)
+
+---
+
+6. الاستغفار والتسبيح
 
 "أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ"
 
 (مئة مرة)
 
+---
 
 "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ"
 
 (مئة مرة)
 
+---
 
-"لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ"
+7. خاتمة الأذكار
 
-(عشر مرات أو مرة واحدة)
+"لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ"
 
+(عشر مرات - أو مرة واحدة)
+
+---
+
+"اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَىٰ نَبِيِّنَا مُحَمَّدٍ"
+
+(عشر مرات)
+
+---
+
+8. دعاء النوم
 
 "بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا"
+
+---
+
+"الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا، وَكَفَانَا وَآوَانَا، فَكَمْ مِمَّنْ لَا كَافِيَ لَهُ وَلَا مُؤْوِيَ"
+
+---
+
+💎 فضل أذكار المساء
+
+· حفظ من شر الليل وما فيه
+· طمأنينة القلب عند النوم
+· سبب لمغفرة الذنوب
+· حصن حصين من الشياطين
+· نور في القبر لمن حافظ عليها
+
+---
 
 🌙 اللهم احفظنا بالليل والنهار، وأصلح أحوالنا، وارحم موتانا، واشف مرضانا 🌙
 
@@ -1251,8 +1208,7 @@ header p{
      PASSWORD MODAL
 ===================================================== -->
 
-<div id="pinModal"
-     class="modal hidden">
+<div id="pinModal" class="modal hidden">
 
 <div class="modal-box">
 
@@ -1278,19 +1234,15 @@ header p{
     placeholder="••••••"
 >
 
-<div id="pinError"
-     class="error">
-</div>
+<div id="pinError" class="error"></div>
 
 <div class="modal-buttons">
 
-<button id="pinEnter"
-        class="enter-btn">
+<button id="pinEnter" class="enter-btn">
 دخول
 </button>
 
-<button id="pinCancel"
-        class="cancel-btn">
+<button id="pinCancel" class="cancel-btn">
 إلغاء
 </button>
 
@@ -1305,14 +1257,11 @@ header p{
      CHAT
 ===================================================== -->
 
-<div id="chatPage"
-     class="hidden chat-page">
-
+<div id="chatPage" class="hidden chat-page">
 
 <div class="chat-header">
 
-<button class="back-btn"
-        id="chatBack">
+<button class="back-btn" id="chatBack">
 رجوع
 </button>
 
@@ -1320,51 +1269,13 @@ header p{
 💬 المحادثة
 </h2>
 
-<button class="clear-chat-btn"
-        id="clearChatBtn">
+<button class="clear-chat-btn" id="clearChatBtn">
 🗑️ مسح
 </button>
 
 </div>
 
-
-<div id="messages"
-     class="messages">
-
-<div class="loading">
-جاري الاتصال...
-</div>
-
-</div>
-
-
-<!-- REPLY BAR -->
-
-<div id="replyBar"
-     class="reply-bar">
-
-<div class="reply-bar-content">
-
-<div id="replyBarTitle"
-     class="reply-bar-title">
-↩️ رد على
-</div>
-
-<div id="replyBarText"
-     class="reply-bar-text">
-</div>
-
-</div>
-
-<button id="cancelReply"
-        class="cancel-reply">
-✕
-</button>
-
-</div>
-
-
-<!-- INPUT -->
+<div id="messages" class="messages"></div>
 
 <div class="chat-input-area">
 
@@ -1375,8 +1286,7 @@ header p{
     autocomplete="off"
 >
 
-<label for="imageInput"
-       class="image-btn">
+<label for="imageInput" class="image-btn">
 📷
 </label>
 
@@ -1387,8 +1297,7 @@ header p{
     style="display:none;"
 >
 
-<button id="sendButton"
-        class="send-btn">
+<button id="sendButton" class="send-btn">
 إرسال
 </button>
 
@@ -1401,14 +1310,11 @@ header p{
      EDIT MODAL
 ===================================================== -->
 
-<div id="editModal"
-     class="edit-modal">
+<div id="editModal" class="edit-modal">
 
 <div class="edit-modal-box">
 
-<h3>
-✏️ تعديل الرسالة
-</h3>
+<h3>✏️ تعديل الرسالة</h3>
 
 <textarea
     id="editInput"
@@ -1417,13 +1323,11 @@ header p{
 
 <div class="edit-modal-buttons">
 
-<button class="save-edit"
-        id="saveEditBtn">
+<button class="save-edit" id="saveEditBtn">
 💾 حفظ
 </button>
 
-<button class="cancel-edit"
-        id="cancelEditBtn">
+<button class="cancel-edit" id="cancelEditBtn">
 ❌ إلغاء
 </button>
 
@@ -1434,45 +1338,24 @@ header p{
 </div>
 
 
-<!-- =====================================================
-     IMAGE PREVIEW
-===================================================== -->
-
-<div id="imagePreview"
-     class="image-preview">
-
-<button id="closePreview"
-        class="close-preview">
-✕
-</button>
-
-<img id="previewImage"
-     src=""
-     alt="صورة">
-
-</div>
+<div id="toast" class="toast"></div>
 
 
 <script type="module">
 
-
 /* =====================================================
-   FIREBASE IMPORTS
+   FIREBASE
 ===================================================== */
 
 import {
     initializeApp
-}
-from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
 
 import {
     getAuth,
     signInAnonymously,
     onAuthStateChanged
-}
-from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
-
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
 
 import {
     getDatabase,
@@ -1486,66 +1369,40 @@ import {
     remove,
     get,
     update
-}
-from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
 
-
-/* =====================================================
-   FIREBASE CONFIG
-===================================================== */
 
 const firebaseConfig = {
-
-    apiKey:
-        "AIzaSyCbBV7pqIVTLKjuIshWSIw2r6-_MQJp1D0",
-
-    authDomain:
-        "the-quran-9686a.firebaseapp.com",
-
-    databaseURL:
-        "https://the-quran-9686a-default-rtdb.firebaseio.com",
-
-    projectId:
-        "the-quran-9686a",
-
-    storageBucket:
-        "the-quran-9686a.firebasestorage.app",
-
-    messagingSenderId:
-        "755712606258",
-
-    appId:
-        "1:755712606258:web:9df9632748f9b5d17bbc2b",
-
-    measurementId:
-        "G-SJT6W3H7PY"
-
+    apiKey: "AIzaSyCbBV7pqIVTLKjuIshWSIw2r6-_MQJp1D0",
+    authDomain: "the-quran-9686a.firebaseapp.com",
+    databaseURL: "https://the-quran-9686a-default-rtdb.firebaseio.com",
+    projectId: "the-quran-9686a",
+    storageBucket: "the-quran-9686a.firebasestorage.app",
+    messagingSenderId: "755712606258",
+    appId: "1:755712606258:web:9df9632748f9b5d17bbc2b",
+    measurementId: "G-SJT6W3H7PY"
 };
 
+const app = initializeApp(firebaseConfig);
 
-const app =
-    initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
-const auth =
-    getAuth(app);
-
-const db =
-    getDatabase(app);
+const db = getDatabase(app);
 
 
 /* =====================================================
-   GLOBAL VARIABLES
+   VARIABLES
 ===================================================== */
 
 let currentUser = null;
 
 let replyingTo = null;
 
-let editingMessageId = null;
-
 let stopMessages = null;
 
-let selectedMessageId = null;
+let editingMessageId = null;
+
+let actionsOpenId = null;
 
 
 /* =====================================================
@@ -1558,8 +1415,7 @@ const IMAGEBB_API_KEY =
 
 async function uploadToImageBB(file){
 
-    const formData =
-        new FormData();
+    const formData = new FormData();
 
     formData.append(
         "image",
@@ -1570,7 +1426,6 @@ async function uploadToImageBB(file){
         "key",
         IMAGEBB_API_KEY
     );
-
 
     try{
 
@@ -1583,32 +1438,24 @@ async function uploadToImageBB(file){
                 }
             );
 
-
         const result =
             await response.json();
 
-
-        if(
-            result.success &&
-            result.data &&
-            result.data.url
-        ){
+        if(result.success){
 
             return result.data.url;
 
         }
-
 
         throw new Error(
             result.error?.message ||
             "فشل رفع الصورة"
         );
 
-
     }catch(error){
 
         console.error(
-            "ImageBB error:",
+            "Image upload error:",
             error
         );
 
@@ -1620,18 +1467,43 @@ async function uploadToImageBB(file){
 
 
 /* =====================================================
-   HTML ESCAPE
+   TOAST
+===================================================== */
+
+function showToast(message){
+
+    const toast =
+        document.getElementById("toast");
+
+    toast.textContent = message;
+
+    toast.classList.add("show");
+
+    clearTimeout(
+        showToast.timer
+    );
+
+    showToast.timer =
+        setTimeout(() => {
+
+            toast.classList.remove(
+                "show"
+            );
+
+        },2200);
+
+}
+
+
+/* =====================================================
+   ESCAPE HTML
 ===================================================== */
 
 function escapeHTML(value){
 
-    if(value === null ||
-       value === undefined){
-
+    if(value === null || value === undefined){
         return "";
-
     }
-
 
     return String(value)
         .replace(/&/g,"&amp;")
@@ -1644,60 +1516,23 @@ function escapeHTML(value){
 
 
 /* =====================================================
-   FORMAT TIME
-===================================================== */
-
-function formatTime(timestamp){
-
-    if(
-        typeof timestamp !== "number"
-    ){
-
-        return "";
-
-    }
-
-
-    try{
-
-        return new Date(
-            timestamp
-        ).toLocaleTimeString(
-            "ar-EG",
-            {
-                hour:"2-digit",
-                minute:"2-digit"
-            }
-        );
-
-    }catch{
-
-        return "";
-
-    }
-
-}
-
-
-/* =====================================================
    AUTH
 ===================================================== */
 
 signInAnonymously(auth)
-
 .then(() => {
 
     console.log(
-        "Anonymous authentication started"
+        "Anonymous auth started"
     );
 
 })
-
 .catch(error => {
 
     console.error(
         "Auth error:",
-        error
+        error.code,
+        error.message
     );
 
 });
@@ -1709,8 +1544,7 @@ onAuthStateChanged(
 
         if(user){
 
-            currentUser =
-                user;
+            currentUser = user;
 
             console.log(
                 "Firebase connected:",
@@ -1722,7 +1556,6 @@ onAuthStateChanged(
                     "messages"
                 );
 
-
             if(
                 box &&
                 box.innerHTML.includes(
@@ -1733,10 +1566,6 @@ onAuthStateChanged(
                 listenMessages();
 
             }
-
-        }else{
-
-            currentUser = null;
 
         }
 
@@ -1776,20 +1605,14 @@ const pages = [
 function showPage(page){
 
     pages.forEach(
-        p => {
-
-            p.classList.add(
-                "hidden"
-            );
-
-        }
+        p => p.classList.add(
+            "hidden"
+        )
     );
-
 
     page.classList.remove(
         "hidden"
     );
-
 
     window.scrollTo(
         0,
@@ -1800,7 +1623,7 @@ function showPage(page){
 
 
 /* =====================================================
-   HOME BUTTONS
+   HOME
 ===================================================== */
 
 document
@@ -1838,7 +1661,7 @@ document
 
 
 /* =====================================================
-   BACK BUTTONS
+   BACK
 ===================================================== */
 
 document
@@ -1895,8 +1718,6 @@ document
     "click",
     () => {
 
-        closeReply();
-
         showPage(
             document.getElementById(
                 "homePage"
@@ -1918,13 +1739,12 @@ async function loadSurahs(){
             "surahList"
         );
 
-
-    list.innerHTML = `
+    list.innerHTML =
+        `
         <div class="loading">
             جاري تحميل السور...
         </div>
-    `;
-
+        `;
 
     try{
 
@@ -1933,10 +1753,8 @@ async function loadSurahs(){
                 "https://api.alquran.cloud/v1/surah"
             );
 
-
         const result =
             await response.json();
-
 
         if(
             !result.data ||
@@ -1951,9 +1769,7 @@ async function loadSurahs(){
 
         }
 
-
         list.innerHTML = "";
-
 
         result.data.forEach(
             surah => {
@@ -1963,38 +1779,24 @@ async function loadSurahs(){
                         "div"
                     );
 
-
                 item.className =
                     "surah";
 
-
                 item.innerHTML = `
-
                     <div class="surah-number">
-                        ${escapeHTML(
-                            surah.number
-                        )}
+                        ${surah.number}
                     </div>
 
                     <div>
-
                         <div class="surah-name">
-                            ${escapeHTML(
-                                surah.name
-                            )}
+                            ${escapeHTML(surah.name)}
                         </div>
 
                         <div class="surah-info">
-                            ${escapeHTML(
-                                surah.numberOfAyahs
-                            )}
-                            آية
+                            ${surah.numberOfAyahs} آية
                         </div>
-
                     </div>
-
                 `;
-
 
                 item.addEventListener(
                     "click",
@@ -2008,7 +1810,6 @@ async function loadSurahs(){
                     }
                 );
 
-
                 list.appendChild(
                     item
                 );
@@ -2016,27 +1817,20 @@ async function loadSurahs(){
             }
         );
 
-
     }catch(error){
 
         console.error(
             error
         );
 
-
-        list.innerHTML = `
-
+        list.innerHTML =
+            `
             <div class="loading">
-
                 ❌ تعذر تحميل السور
-
                 <br><br>
-
                 تأكد من اتصال الإنترنت
-
             </div>
-
-        `;
+            `;
 
     }
 
@@ -2058,27 +1852,23 @@ async function openSurah(
         )
     );
 
-
     document
     .getElementById(
         "readerTitle"
     )
-    .textContent =
-        name;
-
+    .textContent = name;
 
     const content =
         document.getElementById(
             "readerContent"
         );
 
-
-    content.innerHTML = `
+    content.innerHTML =
+        `
         <div class="loading">
             جاري تحميل السورة...
         </div>
-    `;
-
+        `;
 
     try{
 
@@ -2087,14 +1877,10 @@ async function openSurah(
                 `https://api.alquran.cloud/v1/surah/${number}/quran-uthmani`
             );
 
-
         const result =
             await response.json();
 
-
-        if(
-            !result.data
-        ){
+        if(!result.data){
 
             throw new Error(
                 "Surah API Error"
@@ -2102,32 +1888,23 @@ async function openSurah(
 
         }
 
-
         const surah =
             result.data;
 
+        content.innerHTML = "";
 
-        content.innerHTML =
-            "";
-
-
-        if(
-            number !== 9
-        ){
+        if(number !== 9){
 
             const basmala =
                 document.createElement(
                     "div"
                 );
 
-
             basmala.className =
                 "basmala";
 
-
             basmala.textContent =
                 "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ";
-
 
             content.appendChild(
                 basmala
@@ -2135,10 +1912,7 @@ async function openSurah(
 
         }
 
-
-        if(
-            number === 1
-        ){
+        if(number === 1){
 
             renderFatiha(
                 surah,
@@ -2155,14 +1929,11 @@ async function openSurah(
                             "div"
                         );
 
-
                     div.className =
                         "ayah";
 
-
                     div.textContent =
                         ayah.text;
-
 
                     content.appendChild(
                         div
@@ -2173,19 +1944,18 @@ async function openSurah(
 
         }
 
-
     }catch(error){
 
         console.error(
             error
         );
 
-
-        content.innerHTML = `
+        content.innerHTML =
+            `
             <div class="loading">
                 ❌ تعذر تحميل السورة
             </div>
-        `;
+            `;
 
     }
 
@@ -2206,10 +1976,8 @@ function renderFatiha(
             "div"
         );
 
-
     fatihaText.id =
         "fatihaText";
-
 
     surah.ayahs.forEach(
         ayah => {
@@ -2219,14 +1987,11 @@ function renderFatiha(
                     "div"
                 );
 
-
             div.className =
                 "ayah";
 
-
             div.textContent =
                 ayah.text;
-
 
             fatihaText.appendChild(
                 div
@@ -2234,7 +1999,6 @@ function renderFatiha(
 
         }
     );
-
 
     container.appendChild(
         fatihaText
@@ -2246,23 +2010,18 @@ function renderFatiha(
             "div"
         );
 
-
     secretArea.className =
         "fatiha-secret-area";
 
-
     secretArea.innerHTML = `
-
         <div class="fatiha-secret-title">
-            تم الانتهاء من سورة الفاتحة ✅
+            تم الانتهاء من سورة الفاتحه ✅
         </div>
 
         <div class="fatiha-secret-subtitle">
-            أمر رائع، تابع القراءة.
+            امر رائع تابع القراءه.
         </div>
-
     `;
-
 
     container.appendChild(
         secretArea
@@ -2278,46 +2037,25 @@ function renderFatiha(
 
     function startPress(event){
 
-        if(
-            event.type === "mousedown" &&
-            event.button !== 0
-        ){
-
-            return;
-
-        }
-
-
         event.preventDefault();
 
-
-        if(isHolding){
-
+        if(isHolding)
             return;
-
-        }
-
 
         isHolding = true;
 
         triggered = false;
 
-
         timer =
             setTimeout(
                 () => {
 
-                    if(!isHolding){
-
+                    if(!isHolding)
                         return;
-
-                    }
-
 
                     triggered = true;
 
                     isHolding = false;
-
 
                     openPasswordModal();
 
@@ -2330,18 +2068,14 @@ function renderFatiha(
 
     function endPress(){
 
-        if(timer){
-
-            clearTimeout(
-                timer
-            );
-
-            timer = null;
-
-        }
-
+        if(!isHolding)
+            return;
 
         isHolding = false;
+
+        clearTimeout(
+            timer
+        );
 
     }
 
@@ -2349,41 +2083,30 @@ function renderFatiha(
     secretArea.addEventListener(
         "touchstart",
         startPress,
-        {
-            passive:false
-        }
+        {passive:false}
     );
-
 
     secretArea.addEventListener(
         "touchend",
         endPress,
-        {
-            passive:false
-        }
+        {passive:false}
     );
-
 
     secretArea.addEventListener(
         "touchcancel",
         endPress,
-        {
-            passive:false
-        }
+        {passive:false}
     );
-
 
     secretArea.addEventListener(
         "mousedown",
         startPress
     );
 
-
     secretArea.addEventListener(
         "mouseup",
         endPress
     );
-
 
     secretArea.addEventListener(
         "mouseleave",
@@ -2404,29 +2127,22 @@ function openPasswordModal(){
             "pinModal"
         );
 
-
     modal.classList.remove(
         "hidden"
     );
-
 
     const input =
         document.getElementById(
             "pinInput"
         );
 
-
-    input.value =
-        "";
-
+    input.value = "";
 
     document
     .getElementById(
         "pinError"
     )
-    .textContent =
-        "";
-
+    .textContent = "";
 
     setTimeout(
         () => input.focus(),
@@ -2437,9 +2153,7 @@ function openPasswordModal(){
 
 
 document
-.getElementById(
-    "pinCancel"
-)
+.getElementById("pinCancel")
 .addEventListener(
     "click",
     () => {
@@ -2457,9 +2171,7 @@ document
 
 
 document
-.getElementById(
-    "pinEnter"
-)
+.getElementById("pinEnter")
 .addEventListener(
     "click",
     checkPassword
@@ -2467,16 +2179,12 @@ document
 
 
 document
-.getElementById(
-    "pinInput"
-)
+.getElementById("pinInput")
 .addEventListener(
     "keydown",
     event => {
 
-        if(
-            event.key === "Enter"
-        ){
+        if(event.key === "Enter"){
 
             checkPassword();
 
@@ -2493,14 +2201,10 @@ function checkPassword(){
             "pinInput"
         );
 
-
     const pin =
         input.value.trim();
 
-
-    if(
-        pin === "222009"
-    ){
+    if(pin === "222009"){
 
         document
         .getElementById(
@@ -2510,9 +2214,7 @@ function checkPassword(){
             "hidden"
         );
 
-
         openChat();
-
 
     }else{
 
@@ -2523,10 +2225,7 @@ function checkPassword(){
         .textContent =
             "❌ الرقم السري غير صحيح";
 
-
-        input.value =
-            "";
-
+        input.value = "";
 
         input.focus();
 
@@ -2547,1587 +2246,84 @@ function openChat(){
         )
     );
 
-
     if(currentUser){
 
         listenMessages();
 
-    }else{
+        return;
 
-        const box =
-            document.getElementById(
-                "messages"
-            );
+    }
 
+    const box =
+        document.getElementById(
+            "messages"
+        );
 
-        box.innerHTML = `
-
-            <div class="reminder"
-                 style="
-                    background:#064b3b;
-                    padding:15px;
-                    border-radius:12px;
-                    border:1px solid #176653;
-                 ">
-
-                ⏳ جاري الاتصال بـ Firebase...
-
-            </div>
-
+    box.innerHTML =
+        `
+        <div
+            class="reminder"
+            style="
+                background:#064b3b;
+                padding:12px;
+                border-radius:12px;
+                border:1px solid #176653;
+            "
+        >
+            ⏳ جاري الاتصال بـ Firebase...
+        </div>
         `;
 
-    }
 
-}
+    const waitInterval =
+        setInterval(
+            () => {
 
+                if(currentUser){
 
-/* =====================================================
-   DELETE MESSAGE
-===================================================== */
+                    clearInterval(
+                        waitInterval
+                    );
 
-async function deleteMessage(
-    messageId
-){
+                    listenMessages();
 
-    if(!currentUser){
+                }
 
-        throw new Error(
-            "يجب تسجيل الدخول"
+            },
+            200
         );
-
-    }
-
-
-    const messageRef =
-        ref(
-            db,
-            `messages/${messageId}`
-        );
-
-
-    const snapshot =
-        await get(
-            messageRef
-        );
-
-
-    const data =
-        snapshot.val();
-
-
-    if(!data){
-
-        throw new Error(
-            "الرسالة غير موجودة"
-        );
-
-    }
-
-
-    if(
-        data.uid !==
-        currentUser.uid
-    ){
-
-        throw new Error(
-            "لا يمكنك حذف رسالة غير رسالتك"
-        );
-
-    }
-
-
-    await remove(
-        messageRef
-    );
-
-}
-
-
-/* =====================================================
-   EDIT MESSAGE
-===================================================== */
-
-async function editMessage(
-    messageId,
-    newText
-){
-
-    if(!currentUser){
-
-        throw new Error(
-            "يجب تسجيل الدخول"
-        );
-
-    }
-
-
-    const messageRef =
-        ref(
-            db,
-            `messages/${messageId}`
-        );
-
-
-    const snapshot =
-        await get(
-            messageRef
-        );
-
-
-    const data =
-        snapshot.val();
-
-
-    if(!data){
-
-        throw new Error(
-            "الرسالة غير موجودة"
-        );
-
-    }
-
-
-    if(
-        data.uid !==
-        currentUser.uid
-    ){
-
-        throw new Error(
-            "لا يمكنك تعديل رسالة غير رسالتك"
-        );
-
-    }
-
-
-    await update(
-        messageRef,
-        {
-            text:newText,
-            edited:true,
-            editedAt:serverTimestamp()
-        }
-    );
-
-}
-
-
-/* =====================================================
-   CLEAR CHAT LOCAL
-===================================================== */
-
-function clearChatLocally(){
-
-    if(!currentUser){
-
-        alert(
-            "❌ لم يتم الاتصال بعد"
-        );
-
-        return;
-
-    }
-
-
-    const confirmed =
-        confirm(
-            "هل أنت متأكد من مسح المحادثة من جهازك؟\n\nلن يتم حذف الرسائل من Firebase ولن تتأثر عند الآخرين."
-        );
-
-
-    if(!confirmed){
-
-        return;
-
-    }
-
-
-    const clearTime =
-        Date.now();
-
-
-    localStorage.setItem(
-        "chatCleared_" +
-        currentUser.uid,
-        String(clearTime)
-    );
-
-
-    listenMessages();
-
-}
-
-
-document
-.getElementById(
-    "clearChatBtn"
-)
-.addEventListener(
-    "click",
-    clearChatLocally
-);
-
-
-/* =====================================================
-   REPLY SYSTEM
-===================================================== */
-
-function startReply(
-    messageId,
-    name,
-    text
-){
-
-    replyingTo = {
-
-        id:messageId,
-
-        name:name,
-
-        text:text
-
-    };
-
-
-    const input =
-        document.getElementById(
-            "messageInput"
-        );
-
-
-    input.placeholder =
-        `↩️ رد على ${name}...`;
-
-
-    document
-    .getElementById(
-        "replyBarTitle"
-    )
-    .textContent =
-        `↩️ رد على ${name}`;
-
-
-    document
-    .getElementById(
-        "replyBarText"
-    )
-    .textContent =
-        text || "📷 صورة";
-
-
-    document
-    .getElementById(
-        "replyBar"
-    )
-    .classList.add(
-        "show"
-    );
-
-
-    input.focus();
-
-}
-
-
-function closeReply(){
-
-    replyingTo =
-        null;
-
-
-    const input =
-        document.getElementById(
-            "messageInput"
-        );
-
-
-    input.placeholder =
-        "اكتب رسالتك...";
-
-
-    document
-    .getElementById(
-        "replyBar"
-    )
-    .classList.remove(
-        "show"
-    );
-
-}
-
-
-document
-.getElementById(
-    "cancelReply"
-)
-.addEventListener(
-    "click",
-    closeReply
-);
-
-
-/* =====================================================
-   EDIT MODAL
-===================================================== */
-
-const editModal =
-    document.getElementById(
-        "editModal"
-    );
-
-
-const editInput =
-    document.getElementById(
-        "editInput"
-    );
-
-
-const saveEditBtn =
-    document.getElementById(
-        "saveEditBtn"
-    );
-
-
-const cancelEditBtn =
-    document.getElementById(
-        "cancelEditBtn"
-    );
-
-
-function openEditModal(
-    messageId,
-    currentText
-){
-
-    editingMessageId =
-        messageId;
-
-
-    editInput.value =
-        currentText || "";
-
-
-    editModal.classList.add(
-        "show"
-    );
 
 
     setTimeout(
         () => {
 
-            editInput.focus();
-
-            editInput.select();
-
-        },
-        100
-    );
-
-}
-
-
-function closeEditModal(){
-
-    editModal.classList.remove(
-        "show"
-    );
-
-
-    editingMessageId =
-        null;
-
-
-    editInput.value =
-        "";
-
-}
-
-
-saveEditBtn.addEventListener(
-    "click",
-    async () => {
-
-        const newText =
-            editInput.value.trim();
-
-
-        if(!newText){
-
-            alert(
-                "❌ لا يمكنك ترك الرسالة فارغة"
+            clearInterval(
+                waitInterval
             );
 
-            return;
-
-        }
-
-
-        if(!editingMessageId){
-
-            return;
-
-        }
-
-
-        saveEditBtn.disabled =
-            true;
-
-
-        try{
-
-            await editMessage(
-                editingMessageId,
-                newText
-            );
-
-
-            closeEditModal();
-
-
-        }catch(error){
-
-            alert(
-                "❌ فشل تعديل الرسالة:\n" +
-                error.message
-            );
-
-        }finally{
-
-            saveEditBtn.disabled =
-                false;
-
-        }
-
-    }
-);
-
-
-cancelEditBtn.addEventListener(
-    "click",
-    closeEditModal
-);
-
-
-editModal.addEventListener(
-    "click",
-    event => {
-
-        if(
-            event.target ===
-            editModal
-        ){
-
-            closeEditModal();
-
-        }
-
-    }
-);
-
-
-/* =====================================================
-   LISTEN MESSAGES
-===================================================== */
-
-function listenMessages(){
-
-    if(stopMessages){
-
-        stopMessages();
-
-        stopMessages =
-            null;
-
-    }
-
-
-    if(!currentUser){
-
-        return;
-
-    }
-
-
-    const messagesQuery =
-        query(
-
-            ref(
-                db,
-                "messages"
-            ),
-
-            orderByChild(
-                "createdAt"
-            ),
-
-            limitToLast(100)
-
-        );
-
-
-    stopMessages =
-        onValue(
-
-            messagesQuery,
-
-            snapshot => {
-
-                const box =
-                    document.getElementById(
-                        "messages"
-                    );
-
-
-                const clearKey =
-                    "chatCleared_" +
-                    currentUser.uid;
-
-
-                const clearTimeRaw =
-                    localStorage.getItem(
-                        clearKey
-                    );
-
-
-                const clearTime =
-                    clearTimeRaw
-                        ? parseInt(
-                            clearTimeRaw,
-                            10
-                        )
-                        : 0;
-
-
-                let html = "";
-
-
-                if(clearTime){
-
-                    const clearDate =
-                        new Date(
-                            clearTime
-                        ).toLocaleString(
-                            "ar-EG"
-                        );
-
-
-                    html += `
-
-                        <div class="clear-message">
-
-                            🗑️ تم مسح الرسائل القديمة
-
-                            <br>
-
-                            <span style="
-                                font-size:12px;
-                                color:#8ca9a0;
-                            ">
-
-                                منذ ${escapeHTML(
-                                    clearDate
-                                )}
-
-                                <br>
-
-                                الرسائل الجديدة فقط ستظهر هنا
-
-                            </span>
-
-                        </div>
-
-                    `;
-
-                }
-
-
-                html += `
-
-                    <div class="reminder"
-                         style="
-                            background:#064b3b;
-                            padding:12px;
-                            border-radius:12px;
-                            margin-bottom:15px;
-                            border:1px solid #176653;
-                         ">
-
-                        🤍 لا تنسَ قراءة القرآن
-
-                        <br>
-
-                        <span style="
-                            font-size:12px;
-                            color:#a9c9bd;
-                        ">
-
-                            ✅ متصل بـ Firebase
-
-                        </span>
-
-                    </div>
-
-                `;
-
-
-                let hasMessages =
-                    false;
-
-
-                snapshot.forEach(
-                    child => {
-
-                        const data =
-                            child.val();
-
-
-                        if(
-                            clearTime &&
-                            typeof data.createdAt === "number" &&
-                            data.createdAt <= clearTime
-                        ){
-
-                            return;
-
-                        }
-
-
-                        hasMessages =
-                            true;
-
-
-                        html +=
-                            renderMessageHTML(
-                                data,
-                                child.key
-                            );
-
-                    }
-                );
-
-
-                if(
-                    !hasMessages &&
-                    clearTime
-                ){
-
-                    html += `
-
-                        <div class="clear-message">
-
-                            لا توجد رسائل جديدة حتى الآن 💬
-
-                        </div>
-
-                    `;
-
-                }
-
+            if(!currentUser){
 
                 box.innerHTML =
-                    html;
-
-
-                requestAnimationFrame(
-                    () => {
-
-                        box.scrollTop =
-                            box.scrollHeight;
-
-                    }
-                );
-
-
-                selectedMessageId =
-                    null;
-
-            },
-
-            error => {
-
-                console.error(
-                    "Database error:",
-                    error
-                );
-
-
-                const box =
-                    document.getElementById(
-                        "messages"
-                    );
-
-
-                box.innerHTML = `
-
-                    <div class="reminder"
-                         style="
+                    `
+                    <div
+                        class="reminder"
+                        style="
                             color:#ff8585;
                             background:#1a0a0a;
                             padding:15px;
                             border-radius:12px;
-                         ">
-
-                        ❌ حصل خطأ في قاعدة البيانات
-
+                        "
+                    >
+                        ❌ تعذر الاتصال بـ Firebase
                         <br><br>
-
-                        ${escapeHTML(
-                            error.message
-                        )}
-
+                        تأكد من اتصال الإنترنت
                     </div>
-
-                `;
+                    `;
 
             }
-
-        );
-
-}
-
-
-/* =====================================================
-   RENDER MESSAGE
-===================================================== */
-
-function renderMessageHTML(
-    data,
-    messageId
-){
-
-    const mine =
-        currentUser &&
-        data.uid ===
-        currentUser.uid;
-
-
-    const side =
-        mine
-            ? "right"
-            : "left";
-
-
-    const messageText =
-        data.text ||
-        (data.imageUrl
-            ? "📷 صورة"
-            : "");
-
-
-    const safeText =
-        escapeHTML(
-            messageText
-        );
-
-
-    const safeName =
-        mine
-            ? "أنت"
-            : "مستخدم";
-
-
-    let html = `
-
-        <div class="message-wrapper"
-             data-message-id="${escapeHTML(
-                messageId
-             )}">
-
-            <div class="message ${
-                mine
-                    ? "me"
-                    : "other"
-            }"
-            data-message-id="${escapeHTML(
-                messageId
-            )}">
-
-    `;
-
-
-    /* =================================================
-       REPLY PREVIEW
-    ================================================= */
-
-    if(data.replyTo){
-
-        const replyName =
-            escapeHTML(
-                data.replyTo.name ||
-                "مستخدم"
-            );
-
-
-        const replyText =
-            escapeHTML(
-                data.replyTo.text ||
-                "📷 صورة"
-            );
-
-
-        html += `
-
-            <div class="reply-to">
-
-                <span class="reply-name">
-
-                    ↩️ ${replyName}
-
-                </span>
-
-                <span class="reply-text">
-
-                    ${replyText}
-
-                </span>
-
-            </div>
-
-        `;
-
-    }
-
-
-    /* =================================================
-       NAME
-    ================================================= */
-
-    html += `
-
-        <div class="message-name">
-
-            ${safeName}
-
-        </div>
-
-    `;
-
-
-    /* =================================================
-       IMAGE
-    ================================================= */
-
-    if(data.imageUrl){
-
-        const safeImage =
-            escapeHTML(
-                data.imageUrl
-            );
-
-
-        html += `
-
-            <img
-                src="${safeImage}"
-                alt="صورة"
-                class="chat-image"
-                data-image="${safeImage}"
-                loading="lazy"
-            >
-
-        `;
-
-
-        if(
-            data.text &&
-            data.text !== "📷 صورة"
-        ){
-
-            html += `
-
-                <div style="
-                    margin-top:6px;
-                    white-space:pre-wrap;
-                ">
-
-                    ${safeText}
-
-                </div>
-
-            `;
-
-        }
-
-    }else{
-
-        html += `
-
-            <div style="
-                white-space:pre-wrap;
-            ">
-
-                ${safeText}
-
-            </div>
-
-        `;
-
-    }
-
-
-    /* =================================================
-       EDITED
-    ================================================= */
-
-    if(data.edited){
-
-        html += `
-
-            <span class="edited-badge">
-
-                ✏️ تم التعديل
-
-            </span>
-
-        `;
-
-    }
-
-
-    /* =================================================
-       TIME
-    ================================================= */
-
-    html += `
-
-        <span class="message-time">
-
-            ${formatTime(
-                data.createdAt
-            )}
-
-        </span>
-
-    `;
-
-
-    html += `
-
-            </div>
-
-    `;
-
-
-    /* =================================================
-       ACTIONS
-    ================================================= */
-
-    html += `
-
-        <div class="message-actions ${side}"
-             data-actions-id="${escapeHTML(
-                messageId
-             )}">
-
-            <button
-                type="button"
-                class="reply-btn"
-                title="رد"
-                data-action="reply"
-                data-id="${escapeHTML(
-                    messageId
-                )}">
-                ↩️
-            </button>
-
-            <button
-                type="button"
-                class="copy-btn"
-                title="نسخ"
-                data-action="copy"
-                data-id="${escapeHTML(
-                    messageId
-                )}">
-                📋
-            </button>
-
-    `;
-
-
-    if(mine){
-
-        html += `
-
-            <button
-                type="button"
-                class="edit-btn"
-                title="تعديل"
-                data-action="edit"
-                data-id="${escapeHTML(
-                    messageId
-                )}">
-                ✏️
-            </button>
-
-            <button
-                type="button"
-                class="delete-btn"
-                title="حذف"
-                data-action="delete"
-                data-id="${escapeHTML(
-                    messageId
-                )}">
-                🗑️
-            </button>
-
-        `;
-
-    }
-
-
-    html += `
-
-        </div>
-
-    </div>
-
-    `;
-
-
-    return html;
-
-}
-
-
-/* =====================================================
-   MESSAGE ACTION HANDLER
-===================================================== */
-
-document.addEventListener(
-    "click",
-    async event => {
-
-        const actionButton =
-            event.target.closest(
-                "[data-action]"
-            );
-
-
-        /* =============================================
-           ACTION BUTTON
-        ============================================= */
-
-        if(actionButton){
-
-            event.stopPropagation();
-
-
-            const action =
-                actionButton.dataset.action;
-
-
-            const messageId =
-                actionButton.dataset.id;
-
-
-            const wrapper =
-                actionButton.closest(
-                    ".message-wrapper"
-                );
-
-
-            /* =========================================
-               GET MESSAGE DATA FROM FIREBASE
-            ========================================= */
-
-            let data = null;
-
-
-            try{
-
-                const snapshot =
-                    await get(
-                        ref(
-                            db,
-                            `messages/${messageId}`
-                        )
-                    );
-
-
-                data =
-                    snapshot.val();
-
-
-            }catch(error){
-
-                console.error(
-                    error
-                );
-
-                alert(
-                    "❌ تعذر الوصول إلى الرسالة"
-                );
-
-                return;
-
-            }
-
-
-            if(!data){
-
-                alert(
-                    "❌ الرسالة لم تعد موجودة"
-                );
-
-                return;
-
-            }
-
-
-            /* =========================================
-               REPLY
-            ========================================= */
-
-            if(
-                action ===
-                "reply"
-            ){
-
-                const name =
-                    data.uid ===
-                    currentUser?.uid
-                        ? "أنت"
-                        : "مستخدم";
-
-
-                const text =
-                    data.text ||
-                    (
-                        data.imageUrl
-                            ? "📷 صورة"
-                            : ""
-                    );
-
-
-                startReply(
-                    messageId,
-                    name,
-                    text
-                );
-
-
-                hideAllActions();
-
-                return;
-
-            }
-
-
-            /* =========================================
-               COPY
-            ========================================= */
-
-            if(
-                action ===
-                "copy"
-            ){
-
-                const text =
-                    data.text ||
-                    (
-                        data.imageUrl
-                            ? "📷 صورة"
-                            : ""
-                    );
-
-
-                try{
-
-                    await copyText(
-                        text
-                    );
-
-
-                    showTemporaryMessage(
-                        wrapper,
-                        "✅ تم نسخ الرسالة"
-                    );
-
-
-                }catch(error){
-
-                    alert(
-                        "❌ لم يتم نسخ الرسالة"
-                    );
-
-                }
-
-
-                hideAllActions();
-
-                return;
-
-            }
-
-
-            /* =========================================
-               EDIT
-            ========================================= */
-
-            if(
-                action ===
-                "edit"
-            ){
-
-                if(
-                    data.uid !==
-                    currentUser?.uid
-                ){
-
-                    alert(
-                        "❌ لا يمكنك تعديل هذه الرسالة"
-                    );
-
-                    return;
-
-                }
-
-
-                if(
-                    !data.text ||
-                    data.imageUrl &&
-                    data.text === "📷 صورة"
-                ){
-
-                    alert(
-                        "❌ لا يمكن تعديل صورة بدون نص"
-                    );
-
-                    return;
-
-                }
-
-
-                openEditModal(
-                    messageId,
-                    data.text
-                );
-
-
-                hideAllActions();
-
-                return;
-
-            }
-
-
-            /* =========================================
-               DELETE
-            ========================================= */
-
-            if(
-                action ===
-                "delete"
-            ){
-
-                if(
-                    data.uid !==
-                    currentUser?.uid
-                ){
-
-                    alert(
-                        "❌ لا يمكنك حذف هذه الرسالة"
-                    );
-
-                    return;
-
-                }
-
-
-                const confirmed =
-                    confirm(
-                        "هل أنت متأكد من حذف الرسالة؟"
-                    );
-
-
-                if(!confirmed){
-
-                    return;
-
-                }
-
-
-                try{
-
-                    await deleteMessage(
-                        messageId
-                    );
-
-
-                    hideAllActions();
-
-
-                }catch(error){
-
-                    alert(
-                        "❌ فشل حذف الرسالة:\n" +
-                        error.message
-                    );
-
-                }
-
-
-                return;
-
-            }
-
-        }
-
-
-        /* =============================================
-           IMAGE
-        ============================================= */
-
-        const image =
-            event.target.closest(
-                ".chat-image"
-            );
-
-
-        if(image){
-
-            openImagePreview(
-                image.dataset.image
-            );
-
-            return;
-
-        }
-
-
-        /* =============================================
-           MESSAGE CLICK
-        ============================================= */
-
-        const message =
-            event.target.closest(
-                ".message"
-            );
-
-
-        if(message){
-
-            const wrapper =
-                message.closest(
-                    ".message-wrapper"
-                );
-
-
-            const actions =
-                wrapper?.querySelector(
-                    ".message-actions"
-                );
-
-
-            if(!actions){
-
-                return;
-
-            }
-
-
-            const alreadyShown =
-                actions.classList.contains(
-                    "show"
-                );
-
-
-            hideAllActions();
-
-
-            if(!alreadyShown){
-
-                actions.classList.add(
-                    "show"
-                );
-
-
-                selectedMessageId =
-                    message.dataset.messageId;
-
-            }
-
-
-            return;
-
-        }
-
-
-        /* =============================================
-           OUTSIDE CLICK
-        ============================================= */
-
-        if(
-            !event.target.closest(
-                ".message-actions"
-            )
-        ){
-
-            hideAllActions();
-
-        }
-
-    }
-);
-
-
-/* =====================================================
-   HIDE ACTIONS
-===================================================== */
-
-function hideAllActions(){
-
-    document
-    .querySelectorAll(
-        ".message-actions.show"
-    )
-    .forEach(
-        element => {
-
-            element.classList.remove(
-                "show"
-            );
-
-        }
-    );
-
-
-    selectedMessageId =
-        null;
-
-}
-
-
-/* =====================================================
-   COPY TEXT
-===================================================== */
-
-async function copyText(text){
-
-    if(
-        navigator.clipboard &&
-        window.isSecureContext
-    ){
-
-        await navigator.clipboard.writeText(
-            text
-        );
-
-        return;
-
-    }
-
-
-    const textarea =
-        document.createElement(
-            "textarea"
-        );
-
-
-    textarea.value =
-        text;
-
-
-    textarea.style.position =
-        "fixed";
-
-    textarea.style.opacity =
-        "0";
-
-
-    document.body.appendChild(
-        textarea
-    );
-
-
-    textarea.focus();
-
-    textarea.select();
-
-
-    const success =
-        document.execCommand(
-            "copy"
-        );
-
-
-    textarea.remove();
-
-
-    if(!success){
-
-        throw new Error(
-            "Copy failed"
-        );
-
-    }
-
-}
-
-
-/* =====================================================
-   TEMPORARY MESSAGE
-===================================================== */
-
-function showTemporaryMessage(
-    wrapper,
-    text
-){
-
-    const old =
-        wrapper.querySelector(
-            ".copy-feedback"
-        );
-
-
-    if(old){
-
-        old.remove();
-
-    }
-
-
-    const feedback =
-        document.createElement(
-            "div"
-        );
-
-
-    feedback.className =
-        "copy-feedback";
-
-
-    feedback.textContent =
-        text;
-
-
-    feedback.style.cssText = `
-        position:absolute;
-        top:-35px;
-        left:50%;
-        transform:translateX(-50%);
-        background:#064b3b;
-        color:#e8d28a;
-        border:1px solid #176653;
-        padding:6px 12px;
-        border-radius:10px;
-        font-size:12px;
-        z-index:20;
-        white-space:nowrap;
-    `;
-
-
-    wrapper.appendChild(
-        feedback
-    );
-
-
-    setTimeout(
-        () => {
-
-            feedback.remove();
 
         },
-        1500
+        5000
     );
 
 }
@@ -4141,39 +2337,23 @@ async function sendMessage(){
 
     if(!currentUser){
 
-        alert(
-            "❌ انتظر حتى يتم الاتصال"
+        showToast(
+            "❌ انتظر الاتصال بـ Firebase"
         );
 
         return;
 
     }
 
-
     const input =
         document.getElementById(
             "messageInput"
         );
 
-
     const text =
         input.value.trim();
 
-
-    const imageInput =
-        document.getElementById(
-            "imageInput"
-        );
-
-
-    const file =
-        imageInput.files[0];
-
-
-    if(
-        !text &&
-        !file
-    ){
+    if(!text && !selectedImageFile){
 
         return;
 
@@ -4185,57 +2365,23 @@ async function sendMessage(){
             "sendButton"
         );
 
+    sendButton.disabled = true;
 
-    sendButton.disabled =
-        true;
+    sendButton.textContent =
+        "⏳";
 
 
     try{
 
-        let imageUrl =
-            null;
+        let imageUrl = null;
 
 
-        /* =============================================
-           UPLOAD IMAGE
-        ============================================= */
-
-        if(file){
-
-            if(
-                !file.type.startsWith(
-                    "image/"
-                )
-            ){
-
-                throw new Error(
-                    "الملف ليس صورة"
-                );
-
-            }
-
-
-            if(
-                file.size >
-                10 * 1024 * 1024
-            ){
-
-                throw new Error(
-                    "حجم الصورة أكبر من 10MB"
-                );
-
-            }
-
-
-            sendButton.textContent =
-                "رفع...";
-
+        if(selectedImageFile){
 
             imageUrl =
                 await uploadToImageBB(
-                    file
+                    selectedImageFile
                 );
-
 
             if(!imageUrl){
 
@@ -4248,22 +2394,13 @@ async function sendMessage(){
         }
 
 
-        /* =============================================
-           REPLY DATA
-        ============================================= */
-
         const messageData = {
 
             uid:
                 currentUser.uid,
 
             text:
-                text ||
-                (
-                    imageUrl
-                        ? "📷 صورة"
-                        : ""
-                ),
+                text || "📷 صورة",
 
             createdAt:
                 serverTimestamp()
@@ -4306,42 +2443,32 @@ async function sendMessage(){
         );
 
 
-        /* =============================================
-           RESET
-        ============================================= */
+        input.value = "";
 
-        input.value =
-            "";
+        cancelReply();
 
+        clearSelectedImage();
 
-        imageInput.value =
-            "";
-
-
-        closeReply();
-
-
-        sendButton.textContent =
-            "إرسال";
+        showToast(
+            "✅ تم إرسال الرسالة"
+        );
 
 
     }catch(error){
 
         console.error(
+            "Send error:",
             error
         );
 
-
-        alert(
-            "❌ فشل إرسال الرسالة:\n" +
-            error.message
+        showToast(
+            "❌ فشل إرسال الرسالة"
         );
 
     }finally{
 
         sendButton.disabled =
             false;
-
 
         sendButton.textContent =
             "إرسال";
@@ -4351,28 +2478,16 @@ async function sendMessage(){
 }
 
 
-/* =====================================================
-   SEND BUTTON
-===================================================== */
-
 document
-.getElementById(
-    "sendButton"
-)
+.getElementById("sendButton")
 .addEventListener(
     "click",
     sendMessage
 );
 
 
-/* =====================================================
-   ENTER TO SEND
-===================================================== */
-
 document
-.getElementById(
-    "messageInput"
-)
+.getElementById("messageInput")
 .addEventListener(
     "keydown",
     event => {
@@ -4393,161 +2508,843 @@ document
 
 
 /* =====================================================
-   IMAGE INPUT
+   IMAGE
 ===================================================== */
 
+let selectedImageFile = null;
+
+
 document
-.getElementById(
-    "imageInput"
-)
+.getElementById("imageInput")
 .addEventListener(
     "change",
-    () => {
+    event => {
 
-        const input =
-            document.getElementById(
-                "imageInput"
+        const file =
+            event.target.files[0];
+
+        if(!file)
+            return;
+
+        if(!file.type.startsWith("image/")){
+
+            showToast(
+                "❌ الملف ليس صورة"
             );
 
-
-        if(
-            input.files &&
-            input.files[0]
-        ){
-
-            const file =
-                input.files[0];
-
-
-            if(
-                !file.type.startsWith(
-                    "image/"
-                )
-            ){
-
-                alert(
-                    "❌ اختر صورة فقط"
-                );
-
-
-                input.value =
-                    "";
-
-                return;
-
-            }
-
-
-            if(
-                file.size >
-                10 * 1024 * 1024
-            ){
-
-                alert(
-                    "❌ حجم الصورة يجب ألا يتجاوز 10MB"
-                );
-
-
-                input.value =
-                    "";
-
-                return;
-
-            }
-
-
-            const inputText =
-                document.getElementById(
-                    "messageInput"
-                );
-
-
-            if(
-                !inputText.value.trim()
-            ){
-
-                inputText.placeholder =
-                    "📷 الصورة جاهزة للإرسال";
-
-            }
+            return;
 
         }
+
+        if(
+            file.size >
+            8 * 1024 * 1024
+        ){
+
+            showToast(
+                "❌ حجم الصورة أكبر من 8MB"
+            );
+
+            event.target.value = "";
+
+            return;
+
+        }
+
+        selectedImageFile =
+            file;
+
+        showToast(
+            "📷 تم اختيار الصورة"
+        );
 
     }
 );
 
 
+function clearSelectedImage(){
+
+    selectedImageFile = null;
+
+    document
+    .getElementById(
+        "imageInput"
+    )
+    .value = "";
+
+}
+
+
 /* =====================================================
-   IMAGE PREVIEW
+   DELETE MESSAGE
 ===================================================== */
 
-const imagePreview =
-    document.getElementById(
-        "imagePreview"
-    );
-
-
-const previewImage =
-    document.getElementById(
-        "previewImage"
-    );
-
-
-function openImagePreview(
-    url
+async function deleteMessage(
+    messageId
 ){
 
-    if(!url){
+    if(!currentUser){
+
+        throw new Error(
+            "يجب تسجيل الدخول"
+        );
+
+    }
+
+
+    const snapshot =
+        await get(
+            ref(
+                db,
+                `messages/${messageId}`
+            )
+        );
+
+
+    const data =
+        snapshot.val();
+
+
+    if(!data){
+
+        throw new Error(
+            "الرسالة غير موجودة"
+        );
+
+    }
+
+
+    if(
+        data.uid !==
+        currentUser.uid
+    ){
+
+        throw new Error(
+            "لا يمكنك حذف رسالة غير رسالتك"
+        );
+
+    }
+
+
+    await remove(
+        ref(
+            db,
+            `messages/${messageId}`
+        )
+    );
+
+}
+
+
+/* =====================================================
+   EDIT MESSAGE
+===================================================== */
+
+async function editMessage(
+    messageId,
+    newText
+){
+
+    if(!currentUser){
+
+        throw new Error(
+            "يجب تسجيل الدخول"
+        );
+
+    }
+
+
+    const snapshot =
+        await get(
+            ref(
+                db,
+                `messages/${messageId}`
+            )
+        );
+
+
+    const data =
+        snapshot.val();
+
+
+    if(!data){
+
+        throw new Error(
+            "الرسالة غير موجودة"
+        );
+
+    }
+
+
+    if(
+        data.uid !==
+        currentUser.uid
+    ){
+
+        throw new Error(
+            "لا يمكنك تعديل رسالة غير رسالتك"
+        );
+
+    }
+
+
+    await update(
+        ref(
+            db,
+            `messages/${messageId}`
+        ),
+        {
+
+            text:
+                newText,
+
+            edited:
+                true,
+
+            editedAt:
+                serverTimestamp()
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   CLEAR CHAT LOCALLY
+===================================================== */
+
+function clearChatLocally(){
+
+    if(!currentUser){
+
+        showToast(
+            "❌ لم يتم الاتصال بعد"
+        );
 
         return;
 
     }
 
 
-    previewImage.src =
-        url;
+    const confirmClear =
+        confirm(
+            "هل أنت متأكد من مسح الرسائل من شاشتك؟\n\nلن يتم حذفها من عند المستخدمين الآخرين."
+        );
 
 
-    imagePreview.classList.add(
-        "show"
+    if(!confirmClear)
+        return;
+
+
+    const clearTime =
+        Date.now();
+
+
+    localStorage.setItem(
+        "chatCleared_" +
+        currentUser.uid,
+        String(clearTime)
     );
 
-}
 
-
-function closeImagePreview(){
-
-    imagePreview.classList.remove(
-        "show"
+    showToast(
+        "🗑️ تم مسح المحادثة من شاشتك"
     );
 
 
-    previewImage.src =
-        "";
+    listenMessages();
 
 }
 
 
 document
-.getElementById(
-    "closePreview"
-)
+.getElementById("clearChatBtn")
 .addEventListener(
     "click",
-    closeImagePreview
+    clearChatLocally
 );
 
 
-imagePreview.addEventListener(
+/* =====================================================
+   LISTEN MESSAGES
+===================================================== */
+
+function listenMessages(){
+
+    if(!currentUser)
+        return;
+
+
+    if(stopMessages){
+
+        stopMessages();
+
+        stopMessages = null;
+
+    }
+
+
+    const messagesQuery =
+        query(
+            ref(
+                db,
+                "messages"
+            ),
+
+            orderByChild(
+                "createdAt"
+            ),
+
+            limitToLast(100)
+        );
+
+
+    stopMessages =
+        onValue(
+            messagesQuery,
+
+            snapshot => {
+
+                const box =
+                    document.getElementById(
+                        "messages"
+                    );
+
+
+                const clearKey =
+                    "chatCleared_" +
+                    currentUser.uid;
+
+
+                const clearTimeRaw =
+                    localStorage.getItem(
+                        clearKey
+                    );
+
+
+                const clearTime =
+                    clearTimeRaw
+                    ? parseInt(
+                        clearTimeRaw
+                    )
+                    : null;
+
+
+                let html = "";
+
+
+                if(clearTime){
+
+                    const clearDate =
+                        new Date(
+                            clearTime
+                        )
+                        .toLocaleString(
+                            "ar-EG"
+                        );
+
+
+                    html += `
+                        <div class="clear-message">
+                            🗑️ تم مسح المحادثة في ${escapeHTML(clearDate)}
+                            <br>
+                            <span style="
+                                font-size:12px;
+                                color:#8ca9a0;
+                            ">
+                                الرسائل الجديدة فقط ستظهر هنا
+                            </span>
+                        </div>
+                    `;
+
+                }
+
+
+                html += `
+                    <div
+                        class="reminder"
+                        style="
+                            background:#064b3b;
+                            padding:12px;
+                            border-radius:12px;
+                            margin-bottom:15px;
+                            border:1px solid #176653;
+                        "
+                    >
+                        🤍 لا تنسَ قراءة القرآن
+
+                        <br>
+
+                        <span style="
+                            font-size:12px;
+                            color:#a9c9bd;
+                        ">
+                            ✅ متصل بـ Firebase
+                        </span>
+                    </div>
+                `;
+
+
+                snapshot.forEach(
+                    child => {
+
+                        const data =
+                            child.val();
+
+
+                        const createdAt =
+                            typeof data.createdAt === "number"
+                            ? data.createdAt
+                            : 0;
+
+
+                        if(
+                            clearTime &&
+                            createdAt &&
+                            createdAt <= clearTime
+                        ){
+
+                            return;
+
+                        }
+
+
+                        html +=
+                            renderMessageHTML(
+                                data,
+                                child.key
+                            );
+
+                    }
+                );
+
+
+                box.innerHTML =
+                    html;
+
+
+                setTimeout(
+                    () => {
+
+                        box.scrollTop =
+                            box.scrollHeight;
+
+                    },
+                    100
+                );
+
+            },
+
+            error => {
+
+                console.error(
+                    "Database error:",
+                    error
+                );
+
+
+                const box =
+                    document.getElementById(
+                        "messages"
+                    );
+
+
+                box.innerHTML =
+                    `
+                    <div
+                        class="reminder"
+                        style="
+                            color:#ff8585;
+                        "
+                    >
+                        ❌ حصل خطأ في الاتصال بقاعدة البيانات
+                        <br><br>
+                        ${escapeHTML(error.message)}
+                    </div>
+                    `;
+
+            }
+        );
+
+}
+
+
+/* =====================================================
+   RENDER MESSAGE
+===================================================== */
+
+function renderMessageHTML(
+    data,
+    messageId
+){
+
+    const mine =
+        currentUser &&
+        data.uid ===
+        currentUser.uid;
+
+
+    const sideClass =
+        mine
+        ? "mine"
+        : "other-message";
+
+
+    let html = `
+
+        <div
+            class="message-wrapper ${sideClass}"
+            data-id="${escapeHTML(messageId)}"
+        >
+
+    `;
+
+
+    html += `
+
+        <div
+            class="message ${mine ? "me" : "other"}"
+            data-message-id="${escapeHTML(messageId)}"
+        >
+
+    `;
+
+
+    /* ================= REPLY ================= */
+
+    if(data.replyTo){
+
+        html += `
+            <div class="reply-to">
+
+                <span class="reply-name">
+                    ↩️ ${escapeHTML(
+                        data.replyTo.name ||
+                        "مستخدم"
+                    )}
+                </span>
+
+                <span class="reply-text">
+                    : ${escapeHTML(
+                        data.replyTo.text ||
+                        ""
+                    )}
+                </span>
+
+            </div>
+        `;
+
+    }
+
+
+    /* ================= NAME ================= */
+
+    html += `
+        <div class="message-name">
+            ${mine ? "أنت" : "مستخدم"}
+        </div>
+    `;
+
+
+    /* ================= IMAGE ================= */
+
+    if(data.imageUrl){
+
+        const safeImageUrl =
+            escapeHTML(
+                data.imageUrl
+            );
+
+
+        html += `
+            <img
+                src="${safeImageUrl}"
+                alt="صورة"
+                loading="lazy"
+                onerror="this.style.display='none'"
+            >
+        `;
+
+
+        if(
+            data.text &&
+            data.text !==
+            "📷 صورة"
+        ){
+
+            html += `
+                <div style="
+                    margin-top:5px;
+                ">
+                    ${escapeHTML(
+                        data.text
+                    )}
+                </div>
+            `;
+
+        }
+
+    }else{
+
+        html += `
+            <div>
+                ${escapeHTML(
+                    data.text ||
+                    ""
+                )}
+            </div>
+        `;
+
+    }
+
+
+    /* ================= EDITED ================= */
+
+    if(data.edited){
+
+        html += `
+            <span class="edited-badge">
+                ✏️ تم التعديل
+            </span>
+        `;
+
+    }
+
+
+    /* ================= TIME ================= */
+
+    if(
+        typeof data.createdAt ===
+        "number"
+    ){
+
+        const time =
+            new Date(
+                data.createdAt
+            )
+            .toLocaleTimeString(
+                "ar-EG",
+                {
+                    hour:"2-digit",
+                    minute:"2-digit"
+                }
+            );
+
+
+        html += `
+            <span class="message-time">
+                ${escapeHTML(time)}
+            </span>
+        `;
+
+    }
+
+
+    html += `
+        </div>
+    `;
+
+
+    /* =================================================
+       ACTION BUTTONS
+    ================================================= */
+
+    const replyText =
+        data.text ||
+        "📷 صورة";
+
+
+    html += `
+
+        <div
+            class="message-actions"
+            data-actions-id="${escapeHTML(messageId)}"
+        >
+
+            <button
+                type="button"
+                class="reply-btn"
+                data-id="${escapeHTML(messageId)}"
+                data-name="${mine ? "أنت" : "مستخدم"}"
+                data-text="${encodeURIComponent(replyText)}"
+                title="رد"
+            >
+                ↩️
+            </button>
+
+            <button
+                type="button"
+                class="copy-btn"
+                data-text="${encodeURIComponent(replyText)}"
+                title="نسخ"
+            >
+                📋
+            </button>
+
+            ${
+                mine
+                ?
+                `
+                <button
+                    type="button"
+                    class="edit-btn"
+                    data-id="${escapeHTML(messageId)}"
+                    data-text="${encodeURIComponent(
+                        data.text || ""
+                    )}"
+                    title="تعديل"
+                >
+                    ✏️
+                </button>
+
+                <button
+                    type="button"
+                    class="delete-btn"
+                    data-id="${escapeHTML(messageId)}"
+                    title="حذف"
+                >
+                    🗑️
+                </button>
+                `
+                :
+                ""
+            }
+
+        </div>
+
+    `;
+
+
+    html += `
+        </div>
+    `;
+
+
+    return html;
+
+}
+
+
+/* =====================================================
+   MESSAGE CLICK
+===================================================== */
+
+document.addEventListener(
     "click",
     event => {
 
+        const target =
+            event.target;
+
+
+        /* =============================================
+           ACTION BUTTONS
+        ============================================= */
+
         if(
-            event.target ===
-            imagePreview
+            target.closest(
+                ".message-actions button"
+            )
         ){
 
-            closeImagePreview();
+            return;
+
+        }
+
+
+        /* =============================================
+           MESSAGE
+        ============================================= */
+
+        const message =
+            target.closest(
+                ".message"
+            );
+
+
+        if(message){
+
+            const wrapper =
+                message.closest(
+                    ".message-wrapper"
+                );
+
+
+            if(!wrapper)
+                return;
+
+
+            const id =
+                wrapper.dataset.id;
+
+
+            /* إغلاق القديم */
+
+            document
+            .querySelectorAll(
+                ".message-wrapper.show-actions"
+            )
+            .forEach(
+                item => {
+
+                    if(item !== wrapper){
+
+                        item.classList.remove(
+                            "show-actions"
+                        );
+
+                    }
+
+                }
+            );
+
+
+            /* تبديل الحالي */
+
+            wrapper.classList.toggle(
+                "show-actions"
+            );
+
+
+            actionsOpenId =
+                wrapper.classList.contains(
+                    "show-actions"
+                )
+                ? id
+                : null;
+
+
+            return;
+
+        }
+
+
+        /* =============================================
+           PRESS OUTSIDE
+        ============================================= */
+
+        if(
+            !target.closest(
+                ".message-wrapper"
+            )
+        ){
+
+            document
+            .querySelectorAll(
+                ".message-wrapper.show-actions"
+            )
+            .forEach(
+                wrapper => {
+
+                    wrapper.classList.remove(
+                        "show-actions"
+                    );
+
+                }
+            );
+
+            actionsOpenId = null;
 
         }
 
@@ -4556,15 +3353,480 @@ imagePreview.addEventListener(
 
 
 /* =====================================================
-   ESC KEY
+   REPLY BUTTON
 ===================================================== */
+
+document.addEventListener(
+    "click",
+    event => {
+
+        const button =
+            event.target.closest(
+                ".reply-btn"
+            );
+
+
+        if(!button)
+            return;
+
+
+        const id =
+            button.dataset.id;
+
+
+        const name =
+            button.dataset.name;
+
+
+        const text =
+            decodeURIComponent(
+                button.dataset.text ||
+                ""
+            );
+
+
+        replyingTo = {
+
+            id:
+                id,
+
+            name:
+                name,
+
+            text:
+                text
+
+        };
+
+
+        const input =
+            document.getElementById(
+                "messageInput"
+            );
+
+
+        input.placeholder =
+            `↩️ رد على ${name}...`;
+
+
+        input.focus();
+
+
+        closeAllActions();
+
+    }
+);
+
+
+/* =====================================================
+   COPY
+===================================================== */
+
+document.addEventListener(
+    "click",
+    async event => {
+
+        const button =
+            event.target.closest(
+                ".copy-btn"
+            );
+
+
+        if(!button)
+            return;
+
+
+        const text =
+            decodeURIComponent(
+                button.dataset.text ||
+                ""
+            );
+
+
+        try{
+
+            await navigator.clipboard.writeText(
+                text
+            );
+
+            showToast(
+                "📋 تم نسخ الرسالة"
+            );
+
+        }catch(error){
+
+            /* طريقة بديلة */
+
+            const textarea =
+                document.createElement(
+                    "textarea"
+                );
+
+            textarea.value =
+                text;
+
+            textarea.style.position =
+                "fixed";
+
+            textarea.style.opacity =
+                "0";
+
+            document.body.appendChild(
+                textarea
+            );
+
+            textarea.select();
+
+            document.execCommand(
+                "copy"
+            );
+
+            textarea.remove();
+
+            showToast(
+                "📋 تم نسخ الرسالة"
+            );
+
+        }
+
+
+        closeAllActions();
+
+    }
+);
+
+
+/* =====================================================
+   EDIT BUTTON
+===================================================== */
+
+document.addEventListener(
+    "click",
+    event => {
+
+        const button =
+            event.target.closest(
+                ".edit-btn"
+            );
+
+
+        if(!button)
+            return;
+
+
+        const id =
+            button.dataset.id;
+
+
+        const text =
+            decodeURIComponent(
+                button.dataset.text ||
+                ""
+            );
+
+
+        openEditModal(
+            id,
+            text
+        );
+
+
+        closeAllActions();
+
+    }
+);
+
+
+/* =====================================================
+   DELETE BUTTON
+===================================================== */
+
+document.addEventListener(
+    "click",
+    async event => {
+
+        const button =
+            event.target.closest(
+                ".delete-btn"
+            );
+
+
+        if(!button)
+            return;
+
+
+        const id =
+            button.dataset.id;
+
+
+        const confirmed =
+            confirm(
+                "هل أنت متأكد من حذف هذه الرسالة؟"
+            );
+
+
+        if(!confirmed)
+            return;
+
+
+        button.disabled =
+            true;
+
+
+        try{
+
+            await deleteMessage(
+                id
+            );
+
+            showToast(
+                "🗑️ تم حذف الرسالة"
+            );
+
+        }catch(error){
+
+            console.error(
+                error
+            );
+
+            showToast(
+                "❌ " +
+                error.message
+            );
+
+            button.disabled =
+                false;
+
+        }
+
+
+        closeAllActions();
+
+    }
+);
+
+
+/* =====================================================
+   CLOSE ACTIONS
+===================================================== */
+
+function closeAllActions(){
+
+    document
+    .querySelectorAll(
+        ".message-wrapper.show-actions"
+    )
+    .forEach(
+        wrapper => {
+
+            wrapper.classList.remove(
+                "show-actions"
+            );
+
+        }
+    );
+
+
+    actionsOpenId = null;
+
+}
+
+
+/* =====================================================
+   REPLY CANCEL
+===================================================== */
+
+function cancelReply(){
+
+    replyingTo = null;
+
+    const input =
+        document.getElementById(
+            "messageInput"
+        );
+
+    input.placeholder =
+        "اكتب رسالتك...";
+
+}
+
+
+/* =====================================================
+   EDIT MODAL
+===================================================== */
+
+const editModal =
+    document.getElementById(
+        "editModal"
+    );
+
+
+const editInput =
+    document.getElementById(
+        "editInput"
+    );
+
+
+const saveEditBtn =
+    document.getElementById(
+        "saveEditBtn"
+    );
+
+
+const cancelEditBtn =
+    document.getElementById(
+        "cancelEditBtn"
+    );
+
+
+function openEditModal(
+    messageId,
+    currentText
+){
+
+    editingMessageId =
+        messageId;
+
+
+    editInput.value =
+        currentText;
+
+
+    editModal.classList.add(
+        "show"
+    );
+
+
+    setTimeout(
+        () => {
+
+            editInput.focus();
+
+            editInput.select();
+
+        },
+        100
+    );
+
+}
+
+
+function closeEditModal(){
+
+    editModal.classList.remove(
+        "show"
+    );
+
+    editingMessageId =
+        null;
+
+    editInput.value =
+        "";
+
+}
+
+
+saveEditBtn.addEventListener(
+    "click",
+    async () => {
+
+        const newText =
+            editInput.value.trim();
+
+
+        if(!newText){
+
+            showToast(
+                "❌ لا يمكنك ترك الرسالة فارغة"
+            );
+
+            return;
+
+        }
+
+
+        if(!editingMessageId)
+            return;
+
+
+        saveEditBtn.disabled =
+            true;
+
+
+        saveEditBtn.textContent =
+            "⏳ حفظ...";
+
+
+        try{
+
+            await editMessage(
+                editingMessageId,
+                newText
+            );
+
+
+            showToast(
+                "✅ تم تعديل الرسالة"
+            );
+
+
+            closeEditModal();
+
+        }catch(error){
+
+            console.error(
+                error
+            );
+
+            showToast(
+                "❌ " +
+                error.message
+            );
+
+        }finally{
+
+            saveEditBtn.disabled =
+                false;
+
+            saveEditBtn.textContent =
+                "💾 حفظ";
+
+        }
+
+    }
+);
+
+
+cancelEditBtn.addEventListener(
+    "click",
+    closeEditModal
+);
+
+
+editModal.addEventListener(
+    "click",
+    event => {
+
+        if(
+            event.target ===
+            editModal
+        ){
+
+            closeEditModal();
+
+        }
+
+    }
+);
+
 
 document.addEventListener(
     "keydown",
     event => {
 
         if(
-            event.key === "Escape"
+            event.key ===
+            "Escape"
         ){
 
             if(
@@ -4575,27 +3837,11 @@ document.addEventListener(
 
                 closeEditModal();
 
-                return;
+            }else{
+
+                closeAllActions();
 
             }
-
-
-            if(
-                imagePreview.classList.contains(
-                    "show"
-                )
-            ){
-
-                closeImagePreview();
-
-                return;
-
-            }
-
-
-            closeReply();
-
-            hideAllActions();
 
         }
 
@@ -4604,26 +3850,55 @@ document.addEventListener(
 
 
 /* =====================================================
-   CLEANUP
+   RESET REPLY WHEN BACK
 ===================================================== */
 
-window.addEventListener(
-    "beforeunload",
+document
+.getElementById("chatBack")
+.addEventListener(
+    "click",
     () => {
 
-        if(stopMessages){
+        cancelReply();
 
-            stopMessages();
-
-        }
+        closeAllActions();
 
     }
+);
+
+
+/* =====================================================
+   IMAGE INPUT RESET
+===================================================== */
+
+document
+.getElementById("imageInput")
+.addEventListener(
+    "click",
+    () => {
+
+        /*
+          يسمح باختيار نفس الصورة مرة أخرى
+        */
+
+    }
+);
+
+
+/* =====================================================
+   DEBUG
+===================================================== */
+
+console.log(
+    "✅ الموقع تم تحميله بنجاح"
+);
+
+console.log(
+    "✅ نظام الرد / النسخ / التعديل / الحذف جاهز"
 );
 
 </script>
 
 </body>
 </html>
-
-
 
