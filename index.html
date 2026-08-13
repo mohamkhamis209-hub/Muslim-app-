@@ -354,6 +354,7 @@ header p{
     word-wrap:break-word;
     position:relative;
     cursor:default;
+    touch-action:manipulation;
 }
 
 .message.me{
@@ -386,6 +387,42 @@ header p{
     border-radius: 10px;
     display: block;
     margin-top: 5px;
+}
+
+/* ===== أزرار الإجراءات (نسخ - حذف) ===== */
+.message-actions {
+    display: none;
+    margin-top: 8px;
+    gap: 8px;
+    justify-content: flex-start;
+}
+
+.message-actions.show {
+    display: flex;
+}
+
+.message-actions button {
+    background: #174c40;
+    border: none;
+    border-radius: 8px;
+    padding: 5px 12px;
+    color: #fff;
+    font-size: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.message-actions button:hover {
+    background: #2c6b5a;
+}
+
+.message-actions .delete-btn {
+    background: #5a1a1a;
+    color: #ff6b6b;
+}
+
+.message-actions .delete-btn:hover {
+    background: #7a2a2a;
 }
 
 .chat-input-area{
@@ -437,46 +474,6 @@ header p{
     text-align:center;
     padding:40px;
     color:#b6cbc3;
-}
-
-/* ================= CONTEXT MENU ================= */
-
-.context-menu {
-    position: fixed;
-    background: #092c25;
-    border: 1px solid #376b5d;
-    border-radius: 12px;
-    padding: 8px 0;
-    min-width: 160px;
-    z-index: 99999;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.7);
-    display: none;
-}
-
-.context-menu button {
-    display: block;
-    width: 100%;
-    padding: 10px 20px;
-    background: none;
-    border: none;
-    color: #fff;
-    text-align: right;
-    font-size: 15px;
-    cursor: pointer;
-    transition: 0.2s;
-    font-family: inherit;
-}
-
-.context-menu button:hover {
-    background: #174c40;
-}
-
-.context-menu .delete-option {
-    color: #ff6b6b;
-}
-
-.context-menu .delete-option:hover {
-    background: #5a1a1a;
 }
 </style>
 </head>
@@ -965,16 +962,6 @@ header p{
 
     </div>
 
-</div>
-
-
-<!-- =====================================================
-     CONTEXT MENU (القائمة المنبثقة)
-===================================================== -->
-
-<div id="contextMenu" class="context-menu">
-    <button id="copyOption">📋 نسخ</button>
-    <button id="deleteOption" class="delete-option">🗑️ حذف</button>
 </div>
 
 
@@ -1807,10 +1794,6 @@ function checkPassword(){
 
 let stopMessages = null;
 
-// متغيرات القائمة المنبثقة
-let selectedMessageId = null;
-let selectedMessageText = null;
-let selectedMessageOwner = null;
 
 function openChat(){
 
@@ -1987,62 +1970,6 @@ async function deleteMessage(messageId) {
 
 
 /* =====================================================
-   CONTEXT MENU (القائمة المنبثقة للضغط المطول)
-===================================================== */
-
-const contextMenu = document.getElementById('contextMenu');
-const copyOption = document.getElementById('copyOption');
-const deleteOption = document.getElementById('deleteOption');
-
-// إغلاق القائمة عند الضغط في أي مكان
-document.addEventListener('click', function(e) {
-    if (!contextMenu.contains(e.target)) {
-        contextMenu.style.display = 'none';
-    }
-});
-
-// نسخ النص
-copyOption.addEventListener('click', function() {
-    if (selectedMessageText) {
-        navigator.clipboard.writeText(selectedMessageText).then(() => {
-            alert('✅ تم نسخ النص');
-        }).catch(() => {
-            // طريقة بديلة للنسخ
-            const textarea = document.createElement('textarea');
-            textarea.value = selectedMessageText;
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textarea);
-            alert('✅ تم نسخ النص');
-        });
-    }
-    contextMenu.style.display = 'none';
-});
-
-// حذف الرسالة
-deleteOption.addEventListener('click', async function() {
-    if (!selectedMessageId) return;
-    
-    if (selectedMessageOwner !== currentUser?.uid) {
-        alert('❌ لا يمكنك حذف رسالة غير رسالتك');
-        contextMenu.style.display = 'none';
-        return;
-    }
-    
-    if (confirm('هل أنت متأكد من حذف هذه الرسالة؟')) {
-        try {
-            await deleteMessage(selectedMessageId);
-            alert('✅ تم حذف الرسالة');
-        } catch (error) {
-            alert('❌ فشل حذف الرسالة: ' + error.message);
-        }
-    }
-    contextMenu.style.display = 'none';
-});
-
-
-/* =====================================================
    LISTEN MESSAGES
 ===================================================== */
 
@@ -2181,7 +2108,7 @@ function listenMessages(){
 
 
 /* =====================================================
-   RENDER MESSAGE (مع الضغط المطول على مربع الرسالة)
+   RENDER MESSAGE (مع الضغط المطول على المربع كله)
 ===================================================== */
 
 function renderMessage(data, messageId){
@@ -2218,7 +2145,7 @@ function renderMessage(data, messageId){
     message.dataset.owner = data.uid || '';
 
 
-    // ===== المحتوى الداخلي للرسالة (النص أو الصورة) =====
+    // ===== المحتوى الداخلي للرسالة =====
     const contentWrapper = document.createElement("div");
     contentWrapper.style.width = "100%";
 
@@ -2293,7 +2220,59 @@ function renderMessage(data, messageId){
     message.appendChild(time);
 
 
-    // ===== الضغط المطول على مربع الرسالة (message) =====
+    // ===== أزرار الإجراءات (نسخ - حذف) =====
+    const actions = document.createElement("div");
+    actions.className = "message-actions";
+    actions.id = `actions-${messageId}`;
+
+    // زر نسخ
+    const copyBtn = document.createElement("button");
+    copyBtn.textContent = "📋 نسخ";
+    copyBtn.addEventListener("click", function(e) {
+        e.stopPropagation();
+        const text = data.text || "📷 صورة";
+        navigator.clipboard.writeText(text).then(() => {
+            alert("✅ تم نسخ النص");
+        }).catch(() => {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            alert("✅ تم نسخ النص");
+        });
+        actions.classList.remove("show");
+    });
+
+    // زر حذف (يظهر لصاحب الرسالة بس)
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "🗑️ حذف";
+    deleteBtn.className = "delete-btn";
+    if (!mine) {
+        deleteBtn.style.display = "none";
+    }
+    deleteBtn.addEventListener("click", async function(e) {
+        e.stopPropagation();
+        if (confirm("هل أنت متأكد من حذف هذه الرسالة؟")) {
+            try {
+                await deleteMessage(messageId);
+                alert("✅ تم حذف الرسالة");
+            } catch (error) {
+                alert("❌ فشل حذف الرسالة: " + error.message);
+            }
+        }
+        actions.classList.remove("show");
+    });
+
+    actions.appendChild(copyBtn);
+    actions.appendChild(deleteBtn);
+    message.appendChild(actions);
+
+    box.appendChild(message);
+
+
+    // ===== الضغط المطول لإظهار الأزرار (على المربع كله) =====
     let pressTimer = null;
     let isPressing = false;
 
@@ -2301,48 +2280,22 @@ function renderMessage(data, messageId){
         // منع القائمة الافتراضية للمتصفح
         e.preventDefault();
         
+        // لو الأزرار ظاهرة، نخفيها ونخرج
+        if (actions.classList.contains("show")) {
+            actions.classList.remove("show");
+            return;
+        }
+        
         isPressing = true;
         pressTimer = setTimeout(() => {
             if (isPressing) {
-                // حفظ بيانات الرسالة
-                selectedMessageId = messageId;
-                // ناخد النص من داخل contentWrapper
-                const textElements = contentWrapper.querySelectorAll('div');
-                let fullText = '';
-                textElements.forEach(el => {
-                    if (el.textContent && !el.querySelector('img')) {
-                        fullText += el.textContent + ' ';
-                    }
+                // نخفي أي أزرار تانية مفتوحة
+                document.querySelectorAll('.message-actions.show').forEach(el => {
+                    if (el.id !== actions.id) el.classList.remove('show');
                 });
-                selectedMessageText = data.text || fullText.trim() || '📷 صورة';
-                selectedMessageOwner = data.uid || '';
-                
-                // إظهار/إخفاء زر الحذف حسب المالك
-                if (currentUser && data.uid === currentUser.uid) {
-                    deleteOption.style.display = 'block';
-                } else {
-                    deleteOption.style.display = 'none';
-                }
-                
-                // موقع القائمة (نسبة لمربع الرسالة)
-                const rect = message.getBoundingClientRect();
-                let top = rect.top + window.scrollY + 10;
-                let left = rect.left + window.scrollX + rect.width / 2 - 80;
-                
-                // التأكد من عدم خروج القائمة عن الشاشة
-                if (top + 100 > window.innerHeight + window.scrollY) {
-                    top = top - 100;
-                }
-                if (left + 160 > window.innerWidth) {
-                    left = window.innerWidth - 170;
-                }
-                if (left < 10) left = 10;
-                
-                contextMenu.style.top = top + 'px';
-                contextMenu.style.left = left + 'px';
-                contextMenu.style.display = 'block';
+                actions.classList.add("show");
             }
-        }, 800); // 800 مللي ثانية = 0.8 ثانية
+        }, 600); // 0.6 ثانية
     }
 
     function endPress(e) {
@@ -2350,7 +2303,7 @@ function renderMessage(data, messageId){
         clearTimeout(pressTimer);
     }
 
-    // ربط الأحداث على مربع الرسالة (message)
+    // ربط الأحداث على المربع كله
     message.addEventListener('touchstart', startPress, { passive: true });
     message.addEventListener('touchend', endPress, { passive: true });
     message.addEventListener('touchcancel', endPress, { passive: true });
@@ -2360,8 +2313,13 @@ function renderMessage(data, messageId){
     message.addEventListener('mouseup', endPress);
     message.addEventListener('mouseleave', endPress);
 
-
-    box.appendChild(message);
+    // نمنع الأزرار من إغلاق القائمة
+    actions.addEventListener('touchstart', function(e) {
+        e.stopPropagation();
+    });
+    actions.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
 
 }
 
@@ -2546,4 +2504,6 @@ async function sendMessage(){
 
 </body>
 </html>
+
+
 
