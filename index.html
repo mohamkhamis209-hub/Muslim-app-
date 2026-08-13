@@ -352,6 +352,8 @@ header p{
     margin-bottom:12px;
     line-height:1.7;
     word-wrap:break-word;
+    position:relative;
+    cursor:default;
 }
 
 .message.me{
@@ -378,7 +380,6 @@ header p{
     margin-top:5px;
 }
 
-/* ===== ستايل الصور في الشات ===== */
 .message img {
     max-width: 200px;
     max-height: 200px;
@@ -436,6 +437,46 @@ header p{
     text-align:center;
     padding:40px;
     color:#b6cbc3;
+}
+
+/* ================= CONTEXT MENU (القائمة المنبثقة) ================= */
+
+.context-menu {
+    position: fixed;
+    background: #092c25;
+    border: 1px solid #376b5d;
+    border-radius: 12px;
+    padding: 8px 0;
+    min-width: 160px;
+    z-index: 99999;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.7);
+    display: none;
+}
+
+.context-menu button {
+    display: block;
+    width: 100%;
+    padding: 10px 20px;
+    background: none;
+    border: none;
+    color: #fff;
+    text-align: right;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.2s;
+    font-family: inherit;
+}
+
+.context-menu button:hover {
+    background: #174c40;
+}
+
+.context-menu .delete-option {
+    color: #ff6b6b;
+}
+
+.context-menu .delete-option:hover {
+    background: #5a1a1a;
 }
 </style>
 </head>
@@ -927,6 +968,16 @@ header p{
 </div>
 
 
+<!-- =====================================================
+     CONTEXT MENU (القائمة المنبثقة)
+===================================================== -->
+
+<div id="contextMenu" class="context-menu">
+    <button id="copyOption">📋 نسخ</button>
+    <button id="deleteOption" class="delete-option">🗑️ حذف</button>
+</div>
+
+
 <script type="module">
 
 /* =====================================================
@@ -951,7 +1002,9 @@ import {
     serverTimestamp,
     query,
     orderByChild,
-    limitToLast
+    limitToLast,
+    remove,
+    get
 } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
 
 
@@ -1754,6 +1807,10 @@ function checkPassword(){
 
 let stopMessages = null;
 
+// متغيرات القائمة المنبثقة
+let selectedMessageId = null;
+let selectedMessageText = null;
+let selectedMessageOwner = null;
 
 function openChat(){
 
@@ -1905,6 +1962,87 @@ function openChat(){
 
 
 /* =====================================================
+   DELETE MESSAGE
+===================================================== */
+
+async function deleteMessage(messageId) {
+    if (!currentUser) {
+        throw new Error("يجب تسجيل الدخول لحذف الرسائل");
+    }
+    
+    const snapshot = await get(ref(db, `messages/${messageId}`));
+    const data = snapshot.val();
+    
+    if (!data) {
+        throw new Error("الرسالة غير موجودة");
+    }
+    
+    if (data.uid !== currentUser.uid) {
+        throw new Error("لا يمكنك حذف رسالة غير رسالتك");
+    }
+    
+    await remove(ref(db, `messages/${messageId}`));
+    console.log("✅ تم حذف الرسالة");
+}
+
+
+/* =====================================================
+   CONTEXT MENU (القائمة المنبثقة للضغط المطول)
+===================================================== */
+
+const contextMenu = document.getElementById('contextMenu');
+const copyOption = document.getElementById('copyOption');
+const deleteOption = document.getElementById('deleteOption');
+
+// إغلاق القائمة عند الضغط في أي مكان
+document.addEventListener('click', function(e) {
+    if (!contextMenu.contains(e.target)) {
+        contextMenu.style.display = 'none';
+    }
+});
+
+// نسخ النص
+copyOption.addEventListener('click', function() {
+    if (selectedMessageText) {
+        navigator.clipboard.writeText(selectedMessageText).then(() => {
+            alert('✅ تم نسخ النص');
+        }).catch(() => {
+            // طريقة بديلة للنسخ
+            const textarea = document.createElement('textarea');
+            textarea.value = selectedMessageText;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            alert('✅ تم نسخ النص');
+        });
+    }
+    contextMenu.style.display = 'none';
+});
+
+// حذف الرسالة
+deleteOption.addEventListener('click', async function() {
+    if (!selectedMessageId) return;
+    
+    if (selectedMessageOwner !== currentUser?.uid) {
+        alert('❌ لا يمكنك حذف رسالة غير رسالتك');
+        contextMenu.style.display = 'none';
+        return;
+    }
+    
+    if (confirm('هل أنت متأكد من حذف هذه الرسالة؟')) {
+        try {
+            await deleteMessage(selectedMessageId);
+            alert('✅ تم حذف الرسالة');
+        } catch (error) {
+            alert('❌ فشل حذف الرسالة: ' + error.message);
+        }
+    }
+    contextMenu.style.display = 'none';
+});
+
+
+/* =====================================================
    LISTEN MESSAGES
 ===================================================== */
 
@@ -1987,7 +2125,8 @@ function listenMessages(){
 
 
                         renderMessage(
-                            data
+                            data,
+                            child.key
                         );
 
                     }
@@ -2042,10 +2181,10 @@ function listenMessages(){
 
 
 /* =====================================================
-   RENDER MESSAGE (مع دعم الصور)
+   RENDER MESSAGE (مع الضغط المطول للقائمة)
 ===================================================== */
 
-function renderMessage(data){
+function renderMessage(data, messageId){
 
     const box =
         document.getElementById(
@@ -2074,6 +2213,71 @@ function renderMessage(data){
         );
 
 
+    // تخزين الـ ID في الـ element
+    message.dataset.messageId = messageId;
+    message.dataset.owner = data.uid || '';
+
+    // ===== الضغط المطول لفتح القائمة =====
+    let pressTimer = null;
+    let isPressing = false;
+
+    function startPress(e) {
+        // منع القائمة الافتراضية للمتصفح
+        e.preventDefault();
+        
+        isPressing = true;
+        pressTimer = setTimeout(() => {
+            if (isPressing) {
+                // حفظ بيانات الرسالة
+                selectedMessageId = messageId;
+                selectedMessageText = data.text || '';
+                selectedMessageOwner = data.uid || '';
+                
+                // إظهار/إخفاء زر الحذف حسب المالك
+                if (currentUser && data.uid === currentUser.uid) {
+                    deleteOption.style.display = 'block';
+                } else {
+                    deleteOption.style.display = 'none';
+                }
+                
+                // موقع القائمة
+                const rect = message.getBoundingClientRect();
+                let top = rect.top + window.scrollY;
+                let left = rect.left + window.scrollX + rect.width / 2 - 80;
+                
+                // التأكد من عدم خروج القائمة عن الشاشة
+                if (top + 100 > window.innerHeight + window.scrollY) {
+                    top = top - 100;
+                }
+                if (left + 160 > window.innerWidth) {
+                    left = window.innerWidth - 170;
+                }
+                if (left < 10) left = 10;
+                
+                contextMenu.style.top = top + 'px';
+                contextMenu.style.left = left + 'px';
+                contextMenu.style.display = 'block';
+            }
+        }, 800); // 800 مللي ثانية = 0.8 ثانية
+    }
+
+    function endPress(e) {
+        isPressing = false;
+        clearTimeout(pressTimer);
+    }
+
+    // أحداث اللمس للموبايل
+    message.addEventListener('touchstart', startPress, { passive: true });
+    message.addEventListener('touchend', endPress, { passive: true });
+    message.addEventListener('touchcancel', endPress, { passive: true });
+    message.addEventListener('touchmove', endPress, { passive: true });
+
+    // أحداث الماوس للكمبيوتر
+    message.addEventListener('mousedown', startPress);
+    message.addEventListener('mouseup', endPress);
+    message.addEventListener('mouseleave', endPress);
+
+
     const name =
         document.createElement(
             "div"
@@ -2096,7 +2300,6 @@ function renderMessage(data){
         img.src = data.imageUrl;
         message.appendChild(img);
         
-        // لو فيه نص مع الصورة
         if (data.text && data.text !== "📷 صورة") {
             const text = document.createElement("div");
             text.textContent = data.text;
@@ -2104,7 +2307,6 @@ function renderMessage(data){
             message.appendChild(text);
         }
     } else {
-        // نص عادي
         const text = document.createElement("div");
         text.textContent = data.text || "";
         message.appendChild(text);
@@ -2337,5 +2539,4 @@ async function sendMessage(){
 
 </body>
 </html>
-
 
