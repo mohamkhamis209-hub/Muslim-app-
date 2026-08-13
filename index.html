@@ -439,7 +439,7 @@ header p{
     color:#b6cbc3;
 }
 
-/* ================= CONTEXT MENU (القائمة المنبثقة) ================= */
+/* ================= CONTEXT MENU ================= */
 
 .context-menu {
     position: fixed;
@@ -2181,7 +2181,7 @@ function listenMessages(){
 
 
 /* =====================================================
-   RENDER MESSAGE (مع الضغط المطول للقائمة)
+   RENDER MESSAGE (مع الضغط المطول على مربع الرسالة)
 ===================================================== */
 
 function renderMessage(data, messageId){
@@ -2217,65 +2217,10 @@ function renderMessage(data, messageId){
     message.dataset.messageId = messageId;
     message.dataset.owner = data.uid || '';
 
-    // ===== الضغط المطول لفتح القائمة =====
-    let pressTimer = null;
-    let isPressing = false;
 
-    function startPress(e) {
-        // منع القائمة الافتراضية للمتصفح
-        e.preventDefault();
-        
-        isPressing = true;
-        pressTimer = setTimeout(() => {
-            if (isPressing) {
-                // حفظ بيانات الرسالة
-                selectedMessageId = messageId;
-                selectedMessageText = data.text || '';
-                selectedMessageOwner = data.uid || '';
-                
-                // إظهار/إخفاء زر الحذف حسب المالك
-                if (currentUser && data.uid === currentUser.uid) {
-                    deleteOption.style.display = 'block';
-                } else {
-                    deleteOption.style.display = 'none';
-                }
-                
-                // موقع القائمة
-                const rect = message.getBoundingClientRect();
-                let top = rect.top + window.scrollY;
-                let left = rect.left + window.scrollX + rect.width / 2 - 80;
-                
-                // التأكد من عدم خروج القائمة عن الشاشة
-                if (top + 100 > window.innerHeight + window.scrollY) {
-                    top = top - 100;
-                }
-                if (left + 160 > window.innerWidth) {
-                    left = window.innerWidth - 170;
-                }
-                if (left < 10) left = 10;
-                
-                contextMenu.style.top = top + 'px';
-                contextMenu.style.left = left + 'px';
-                contextMenu.style.display = 'block';
-            }
-        }, 800); // 800 مللي ثانية = 0.8 ثانية
-    }
-
-    function endPress(e) {
-        isPressing = false;
-        clearTimeout(pressTimer);
-    }
-
-    // أحداث اللمس للموبايل
-    message.addEventListener('touchstart', startPress, { passive: true });
-    message.addEventListener('touchend', endPress, { passive: true });
-    message.addEventListener('touchcancel', endPress, { passive: true });
-    message.addEventListener('touchmove', endPress, { passive: true });
-
-    // أحداث الماوس للكمبيوتر
-    message.addEventListener('mousedown', startPress);
-    message.addEventListener('mouseup', endPress);
-    message.addEventListener('mouseleave', endPress);
+    // ===== المحتوى الداخلي للرسالة (النص أو الصورة) =====
+    const contentWrapper = document.createElement("div");
+    contentWrapper.style.width = "100%";
 
 
     const name =
@@ -2298,18 +2243,18 @@ function renderMessage(data, messageId){
     if (data.imageUrl) {
         const img = document.createElement("img");
         img.src = data.imageUrl;
-        message.appendChild(img);
+        contentWrapper.appendChild(img);
         
         if (data.text && data.text !== "📷 صورة") {
             const text = document.createElement("div");
             text.textContent = data.text;
             text.style.marginTop = "5px";
-            message.appendChild(text);
+            contentWrapper.appendChild(text);
         }
     } else {
         const text = document.createElement("div");
         text.textContent = data.text || "";
-        message.appendChild(text);
+        contentWrapper.appendChild(text);
     }
 
 
@@ -2342,19 +2287,81 @@ function renderMessage(data, messageId){
     }
 
 
-    message.appendChild(
-        name
-    );
+    // نضيف الاسم والوقت والمحتوى للمربع
+    message.appendChild(name);
+    message.appendChild(contentWrapper);
+    message.appendChild(time);
 
 
-    message.appendChild(
-        time
-    );
+    // ===== الضغط المطول على مربع الرسالة (message) =====
+    let pressTimer = null;
+    let isPressing = false;
+
+    function startPress(e) {
+        // منع القائمة الافتراضية للمتصفح
+        e.preventDefault();
+        
+        isPressing = true;
+        pressTimer = setTimeout(() => {
+            if (isPressing) {
+                // حفظ بيانات الرسالة
+                selectedMessageId = messageId;
+                // ناخد النص من داخل contentWrapper
+                const textElements = contentWrapper.querySelectorAll('div');
+                let fullText = '';
+                textElements.forEach(el => {
+                    if (el.textContent && !el.querySelector('img')) {
+                        fullText += el.textContent + ' ';
+                    }
+                });
+                selectedMessageText = data.text || fullText.trim() || '📷 صورة';
+                selectedMessageOwner = data.uid || '';
+                
+                // إظهار/إخفاء زر الحذف حسب المالك
+                if (currentUser && data.uid === currentUser.uid) {
+                    deleteOption.style.display = 'block';
+                } else {
+                    deleteOption.style.display = 'none';
+                }
+                
+                // موقع القائمة (نسبة لمربع الرسالة)
+                const rect = message.getBoundingClientRect();
+                let top = rect.top + window.scrollY + 10;
+                let left = rect.left + window.scrollX + rect.width / 2 - 80;
+                
+                // التأكد من عدم خروج القائمة عن الشاشة
+                if (top + 100 > window.innerHeight + window.scrollY) {
+                    top = top - 100;
+                }
+                if (left + 160 > window.innerWidth) {
+                    left = window.innerWidth - 170;
+                }
+                if (left < 10) left = 10;
+                
+                contextMenu.style.top = top + 'px';
+                contextMenu.style.left = left + 'px';
+                contextMenu.style.display = 'block';
+            }
+        }, 800); // 800 مللي ثانية = 0.8 ثانية
+    }
+
+    function endPress(e) {
+        isPressing = false;
+        clearTimeout(pressTimer);
+    }
+
+    // ربط الأحداث على مربع الرسالة (message)
+    message.addEventListener('touchstart', startPress, { passive: true });
+    message.addEventListener('touchend', endPress, { passive: true });
+    message.addEventListener('touchcancel', endPress, { passive: true });
+    message.addEventListener('touchmove', endPress, { passive: true });
+
+    message.addEventListener('mousedown', startPress);
+    message.addEventListener('mouseup', endPress);
+    message.addEventListener('mouseleave', endPress);
 
 
-    box.appendChild(
-        message
-    );
+    box.appendChild(message);
 
 }
 
