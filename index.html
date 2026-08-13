@@ -1168,7 +1168,6 @@ const db = getDatabase(app);
 
 let currentUser = null;
 let replyingTo = null;
-let isChatCleared = false;
 let editingMessageId = null;
 
 // =====================================================
@@ -2350,6 +2349,11 @@ function listenMessages(){
                 setTimeout(() => {
                     box.scrollTop = box.scrollHeight;
                 }, 150);
+                
+                // ربط الأحداث بعد تحميل الرسائل
+                setTimeout(() => {
+                    attachButtonEvents();
+                }, 200);
 
             },
 
@@ -2459,97 +2463,121 @@ function renderMessageHTML(data, messageId) {
 
 
 /* =====================================================
-   ربط أحداث الأزرار (Event Delegation)
+   ربط أحداث الأزرار
 ===================================================== */
 
-// نربط الأحداث على الـ container كله
-document.addEventListener('click', function(e) {
+function attachButtonEvents() {
     // زر رد
-    if (e.target.classList.contains('reply-btn')) {
-        const id = e.target.dataset.id;
-        const name = e.target.dataset.name;
-        const text = decodeURIComponent(e.target.dataset.text);
-        replyingTo = { id, name, text };
-        document.getElementById("messageInput").placeholder = `↩️ رد على ${name}...`;
-        document.getElementById("messageInput").focus();
-        // نخفي الأزرار
-        const actions = e.target.closest('.message-actions');
-        if (actions) {
-            actions.classList.remove('show');
-            const wrapper = actions.closest('.message-wrapper');
-            if (wrapper) {
-                wrapper.querySelector('.message').style.transform = 'translateX(0)';
-            }
-        }
-        return;
-    }
+    document.querySelectorAll('.reply-btn').forEach(btn => {
+        // إزالة الأحداث القديمة
+        btn.replaceWith(btn.cloneNode(true));
+    });
     
     // زر نسخ
-    if (e.target.classList.contains('copy-btn')) {
-        const text = decodeURIComponent(e.target.dataset.text);
-        navigator.clipboard.writeText(text).then(() => {
-            alert("✅ تم نسخ النص");
-        }).catch(() => {
-            const textarea = document.createElement('textarea');
-            textarea.value = text;
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textarea);
-            alert("✅ تم نسخ النص");
-        });
-        const actions = e.target.closest('.message-actions');
-        if (actions) {
-            actions.classList.remove('show');
-            const wrapper = actions.closest('.message-wrapper');
-            if (wrapper) {
-                wrapper.querySelector('.message').style.transform = 'translateX(0)';
-            }
-        }
-        return;
-    }
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+        btn.replaceWith(btn.cloneNode(true));
+    });
     
     // زر تعديل
-    if (e.target.classList.contains('edit-btn')) {
-        const id = e.target.dataset.id;
-        const text = decodeURIComponent(e.target.dataset.text);
-        openEditModal(id, text);
-        const actions = e.target.closest('.message-actions');
-        if (actions) {
-            actions.classList.remove('show');
-            const wrapper = actions.closest('.message-wrapper');
-            if (wrapper) {
-                wrapper.querySelector('.message').style.transform = 'translateX(0)';
-            }
-        }
-        return;
-    }
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.replaceWith(btn.cloneNode(true));
+    });
     
     // زر حذف
-    if (e.target.classList.contains('delete-btn')) {
-        const id = e.target.dataset.id;
-        if (confirm("هل أنت متأكد من حذف هذه الرسالة؟")) {
-            deleteMessage(id).then(() => {
-                alert("✅ تم حذف الرسالة");
-            }).catch(error => {
-                alert("❌ فشل حذف الرسالة: " + error.message);
-            });
-        }
-        const actions = e.target.closest('.message-actions');
-        if (actions) {
-            actions.classList.remove('show');
-            const wrapper = actions.closest('.message-wrapper');
-            if (wrapper) {
-                wrapper.querySelector('.message').style.transform = 'translateX(0)';
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.replaceWith(btn.cloneNode(true));
+    });
+    
+    // ربط الأحداث الجديدة
+    document.querySelectorAll('.reply-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const id = this.dataset.id;
+            const name = this.dataset.name;
+            const text = decodeURIComponent(this.dataset.text);
+            replyingTo = { id, name, text };
+            document.getElementById("messageInput").placeholder = `↩️ رد على ${name}...`;
+            document.getElementById("messageInput").focus();
+            const actions = this.closest('.message-actions');
+            if (actions) {
+                actions.classList.remove('show');
+                const wrapper = actions.closest('.message-wrapper');
+                if (wrapper) {
+                    wrapper.querySelector('.message').style.transform = 'translateX(0)';
+                }
             }
-        }
-        return;
-    }
-});
+        });
+    });
+    
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const text = decodeURIComponent(this.dataset.text);
+            navigator.clipboard.writeText(text).then(() => {
+                alert("✅ تم نسخ النص");
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert("✅ تم نسخ النص");
+            });
+            const actions = this.closest('.message-actions');
+            if (actions) {
+                actions.classList.remove('show');
+                const wrapper = actions.closest('.message-wrapper');
+                if (wrapper) {
+                    wrapper.querySelector('.message').style.transform = 'translateX(0)';
+                }
+            }
+        });
+    });
+    
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const id = this.dataset.id;
+            const text = decodeURIComponent(this.dataset.text);
+            openEditModal(id, text);
+            const actions = this.closest('.message-actions');
+            if (actions) {
+                actions.classList.remove('show');
+                const wrapper = actions.closest('.message-wrapper');
+                if (wrapper) {
+                    wrapper.querySelector('.message').style.transform = 'translateX(0)';
+                }
+            }
+        });
+    });
+    
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const id = this.dataset.id;
+            if (confirm("هل أنت متأكد من حذف هذه الرسالة؟")) {
+                deleteMessage(id).then(() => {
+                    alert("✅ تم حذف الرسالة");
+                }).catch(error => {
+                    alert("❌ فشل حذف الرسالة: " + error.message);
+                });
+            }
+            const actions = this.closest('.message-actions');
+            if (actions) {
+                actions.classList.remove('show');
+                const wrapper = actions.closest('.message-wrapper');
+                if (wrapper) {
+                    wrapper.querySelector('.message').style.transform = 'translateX(0)';
+                }
+            }
+        });
+    });
+}
 
 
 /* =====================================================
-   السحب للجنب (Swipe) - Event Delegation
+   السحب للجنب (Swipe)
 ===================================================== */
 
 const messagesContainer = document.getElementById('messages');
@@ -2883,7 +2911,4 @@ async function sendMessage(){
 
 </body>
 </html>
-
-
-
 
