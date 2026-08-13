@@ -378,6 +378,15 @@ header p{
     margin-top:5px;
 }
 
+/* ===== ستايل الصور في الشات ===== */
+.message img {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 10px;
+    display: block;
+    margin-top: 5px;
+}
+
 .chat-input-area{
     position:fixed;
     bottom:0;
@@ -389,6 +398,7 @@ header p{
     display:flex;
     gap:8px;
     z-index:30;
+    align-items:center;
 }
 
 .chat-input{
@@ -402,12 +412,24 @@ header p{
 }
 
 .send-btn{
-    width:75px;
     border:0;
     border-radius:15px;
     background:#c6aa57;
     color:#071d18;
     font-weight:bold;
+    padding:13px 18px;
+}
+
+.image-btn{
+    background:#174c40;
+    border-radius:15px;
+    padding:10px 14px;
+    cursor:pointer;
+    border:1px solid #28574b;
+    color:#fff;
+    font-size:20px;
+    display:flex;
+    align-items:center;
 }
 
 .loading{
@@ -888,6 +910,12 @@ header p{
             autocomplete="off"
         >
 
+        <!-- زر رفع الصورة -->
+        <label for="imageInput" class="image-btn">
+            📷
+        </label>
+        <input type="file" id="imageInput" accept="image/*" style="display:none;">
+
         <button
             id="sendButton"
             class="send-btn">
@@ -944,6 +972,35 @@ const db = getDatabase(app);
 
 let currentUser = null;
 
+// =====================================================
+// IMAGEBB - رفع الصور مجاناً
+// =====================================================
+
+const IMAGEBB_API_KEY = 'bdbc215ba815ebac7dde2e79f4753a7a';
+
+async function uploadToImageBB(file) {
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('key', IMAGEBB_API_KEY);
+    
+    try {
+        const response = await fetch('https://api.imgbb.com/1/upload', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            return result.data.url;
+        } else {
+            throw new Error(result.error?.message || 'فشل الرفع');
+        }
+    } catch (error) {
+        console.error('❌ خطأ في رفع الصورة:', error);
+        return null;
+    }
+}
 
 /* =====================================================
    AUTH
@@ -1985,7 +2042,7 @@ function listenMessages(){
 
 
 /* =====================================================
-   RENDER MESSAGE
+   RENDER MESSAGE (مع دعم الصور)
 ===================================================== */
 
 function renderMessage(data){
@@ -2033,14 +2090,25 @@ function renderMessage(data){
             : "مستخدم";
 
 
-    const text =
-        document.createElement(
-            "div"
-        );
-
-
-    text.textContent =
-        data.text || "";
+    // لو فيه صورة
+    if (data.imageUrl) {
+        const img = document.createElement("img");
+        img.src = data.imageUrl;
+        message.appendChild(img);
+        
+        // لو فيه نص مع الصورة
+        if (data.text && data.text !== "📷 صورة") {
+            const text = document.createElement("div");
+            text.textContent = data.text;
+            text.style.marginTop = "5px";
+            message.appendChild(text);
+        }
+    } else {
+        // نص عادي
+        const text = document.createElement("div");
+        text.textContent = data.text || "";
+        message.appendChild(text);
+    }
 
 
     const time =
@@ -2074,11 +2142,6 @@ function renderMessage(data){
 
     message.appendChild(
         name
-    );
-
-
-    message.appendChild(
-        text
     );
 
 
@@ -2120,6 +2183,51 @@ document
 
     }
 );
+
+
+// =====================================================
+// رفع الصورة عند اختيارها
+// =====================================================
+
+document.getElementById("imageInput").addEventListener("change", async function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // عرض رسالة "جاري الرفع"
+    const box = document.getElementById("messages");
+    const loadingMsg = document.createElement("div");
+    loadingMsg.className = "message me";
+    loadingMsg.style.background = "#2c3e50";
+    loadingMsg.style.color = "#f1c40f";
+    loadingMsg.textContent = "⏳ جاري رفع الصورة...";
+    box.appendChild(loadingMsg);
+    box.scrollTop = box.scrollHeight;
+    
+    // رفع الصورة
+    const imageUrl = await uploadToImageBB(file);
+    
+    // حذف رسالة "جاري الرفع"
+    loadingMsg.remove();
+    
+    if (imageUrl) {
+        // إرسال رابط الصورة في الشات
+        if (!currentUser) {
+            alert("⏳ انتظر حتى يتصل Firebase");
+            return;
+        }
+        
+        await push(ref(db, "messages"), {
+            uid: currentUser.uid,
+            text: "📷 صورة",
+            imageUrl: imageUrl,
+            createdAt: serverTimestamp()
+        });
+    } else {
+        alert("❌ فشل رفع الصورة، حاول تاني");
+    }
+    
+    this.value = '';
+});
 
 
 async function sendMessage(){
@@ -2229,4 +2337,5 @@ async function sendMessage(){
 
 </body>
 </html>
+
 
